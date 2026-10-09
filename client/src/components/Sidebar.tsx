@@ -25,7 +25,10 @@ import {
   AlignCenter,
   ArrowUpDown,
   X,
+  Palette,
+  RotateCcw,
 } from 'lucide-react';
+import { RECOLOR_PALETTE } from '../utils/recolor';
 
 interface SidebarProps {
   products: ProductPreset[];
@@ -53,6 +56,9 @@ interface SidebarProps {
   isUpscaling: boolean;
   onRunDefringe: (chokePx: number) => void;
   isDefringing: boolean;
+  onApplyColorOverlay?: (colorHex: string) => void;
+  onResetArtworkColor?: () => void;
+  isRecoloring?: boolean;
   onExportClick: (format: 'PNG' | 'JPEG', trimEdges: boolean) => void;
   isExporting: boolean;
   onCenterLayer: () => void;
@@ -85,6 +91,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isUpscaling,
   onRunDefringe,
   isDefringing,
+  onApplyColorOverlay,
+  onResetArtworkColor,
+  isRecoloring = false,
   onExportClick,
   isExporting,
   onCenterLayer,
@@ -107,6 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [selectedBgMode, setSelectedBgMode] = useState<'auto' | 'graphic' | 'photo'>('auto');
   const [preserveFineDetail, setPreserveFineDetail] = useState(true);
   const [bgTolerance, setBgTolerance] = useState(14);
+  const [customColorHex, setCustomColorHex] = useState('#000000');
 
   // Unit conversion
   const displayW = unit === 'in'
@@ -804,6 +814,167 @@ export const Sidebar: React.FC<SidebarProps> = ({
               >
                 {isDefringing ? 'Cleaning...' : 'Apply Edge Defringe'}
               </button>
+            </div>
+
+            {/* Photoshop-style Color Overlay / Recolor Artwork */}
+            <div
+              style={{
+                background: 'var(--bg-panel)',
+                border: '1px solid var(--border-subtle)',
+                borderRadius: 'var(--radius-lg)',
+                padding: '14px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Palette size={16} color="var(--color-canva-violet)" />
+                  <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                    COLOR OVERLAY (PHOTOSHOP FILL)
+                  </span>
+                </div>
+                {activeLayer?.colorOverlayHex && (
+                  <span
+                    style={{
+                      fontSize: '0.66rem',
+                      fontFamily: 'var(--font-mono)',
+                      background: 'rgba(139, 61, 255, 0.1)',
+                      color: 'var(--color-canva-violet)',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      fontWeight: 600,
+                    }}
+                  >
+                    Active: {activeLayer.colorOverlayHex.toUpperCase()}
+                  </span>
+                )}
+              </div>
+
+              <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', lineHeight: '1.4', marginBottom: '12px' }}>
+                Fill your graphic/text with any solid color (e.g. Paint Black or White). Preserves 100% transparent background and anti-aliased edge details.
+              </p>
+
+              {/* Quick Primary Actions: Paint Black / Paint White */}
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                <button
+                  className="btn-secondary"
+                  onClick={() => onApplyColorOverlay?.('#000000')}
+                  disabled={!activeLayer || isRecoloring}
+                  style={{
+                    flex: 1,
+                    padding: '8px 10px',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    background: '#0F1015',
+                    color: '#FFFFFF',
+                    border: '1px solid #000000',
+                    justifyContent: 'center',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                    cursor: 'pointer',
+                  }}
+                  title="Recolor graphic to Pure Black (#000000)"
+                >
+                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#FFFFFF', marginRight: '6px' }} />
+                  <span>{isRecoloring ? '...' : 'Paint Black'}</span>
+                </button>
+
+                <button
+                  className="btn-secondary"
+                  onClick={() => onApplyColorOverlay?.('#FFFFFF')}
+                  disabled={!activeLayer || isRecoloring}
+                  style={{
+                    flex: 1,
+                    padding: '8px 10px',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    background: '#FFFFFF',
+                    color: '#0F1015',
+                    border: '1.5px solid var(--border-strong)',
+                    justifyContent: 'center',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.06)',
+                    cursor: 'pointer',
+                  }}
+                  title="Recolor graphic to Pure White (#FFFFFF)"
+                >
+                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#0F1015', marginRight: '6px' }} />
+                  <span>{isRecoloring ? '...' : 'Paint White'}</span>
+                </button>
+              </div>
+
+              {/* Palette Swatches */}
+              <div style={{ marginBottom: '12px' }}>
+                <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '6px' }}>
+                  POPULAR PRINT COLORS
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px' }}>
+                  {RECOLOR_PALETTE.slice(2).map((preset) => (
+                    <button
+                      key={preset.hex}
+                      onClick={() => {
+                        setCustomColorHex(preset.hex);
+                        onApplyColorOverlay?.(preset.hex);
+                      }}
+                      disabled={!activeLayer || isRecoloring}
+                      style={{
+                        height: '28px',
+                        borderRadius: '6px',
+                        background: preset.hex,
+                        border: activeLayer?.colorOverlayHex === preset.hex ? '2px solid var(--color-ink-black)' : '1px solid rgba(0,0,0,0.15)',
+                        boxShadow: activeLayer?.colorOverlayHex === preset.hex ? '0 0 0 2px rgba(139, 61, 255, 0.4)' : 'none',
+                        cursor: 'pointer',
+                        transform: activeLayer?.colorOverlayHex === preset.hex ? 'scale(1.08)' : 'scale(1)',
+                        transition: 'all 0.15s ease',
+                      }}
+                      title={`${preset.name} (${preset.hex})`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Custom Color Picker & Reset */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1, background: 'var(--bg-control)', padding: '4px 8px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+                  <input
+                    type="color"
+                    value={customColorHex}
+                    onChange={(e) => setCustomColorHex(e.target.value)}
+                    style={{ width: '24px', height: '24px', border: 'none', background: 'transparent', cursor: 'pointer', padding: 0 }}
+                  />
+                  <input
+                    type="text"
+                    value={customColorHex}
+                    onChange={(e) => setCustomColorHex(e.target.value)}
+                    placeholder="#HEX"
+                    style={{
+                      border: 'none',
+                      background: 'transparent',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.74rem',
+                      width: '70px',
+                      padding: 0,
+                    }}
+                  />
+                  <button
+                    className="btn-secondary"
+                    onClick={() => onApplyColorOverlay?.(customColorHex)}
+                    disabled={!activeLayer || isRecoloring}
+                    style={{ fontSize: '0.70rem', padding: '3px 8px', marginLeft: 'auto' }}
+                  >
+                    Apply
+                  </button>
+                </div>
+
+                {activeLayer?.colorOverlayHex && onResetArtworkColor && (
+                  <button
+                    className="btn-secondary"
+                    onClick={onResetArtworkColor}
+                    title="Reset to original uploaded artwork colors"
+                    style={{ padding: '6px 8px', fontSize: '0.70rem' }}
+                  >
+                    <RotateCcw size={12} />
+                    <span>Reset</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         )}

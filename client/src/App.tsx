@@ -17,6 +17,8 @@ import { GenerateModal } from './components/GenerateModal';
 import { CompareModal } from './components/CompareModal';
 import { ExportModal } from './components/ExportModal';
 import { ShortcutsModal } from './components/ShortcutsModal';
+import { NewDesignModal } from './components/NewDesignModal';
+import { recolorImageDataUrl } from './utils/recolor';
 import { Maximize2, Layers, Wand2, ShieldAlert, Download } from 'lucide-react';
 import qikinkPresets from './presets/qikink.json';
 
@@ -69,12 +71,14 @@ export const App: React.FC = () => {
   const [estimatedBgHex, setEstimatedBgHex] = useState<string | null>(null);
   const [isUpscaling, setIsUpscaling] = useState<boolean>(false);
   const [isDefringing, setIsDefringing] = useState<boolean>(false);
+  const [isRecoloring, setIsRecoloring] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
 
   // Modals
   const [isGenerateOpen, setIsGenerateOpen] = useState<boolean>(false);
   const [isCompareOpen, setIsCompareOpen] = useState<boolean>(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState<boolean>(false);
+  const [isNewDesignOpen, setIsNewDesignOpen] = useState<boolean>(false);
   const [exportModalState, setExportModalState] = useState<{
     isOpen: boolean;
     report: VerificationReport | null;
@@ -620,11 +624,130 @@ export const App: React.FC = () => {
         originalWidth: v.width,
         originalHeight: v.height,
         hasAlpha: v.hasAlpha,
+        colorOverlayHex: v.colorOverlayHex,
       };
       const newLayers = layers.map((l) => (l.id === activeLayer.id ? updated : l));
       setLayers(newLayers);
       pushHistory(newLayers);
     }
+  };
+
+  // 12. Photoshop-Style Color Overlay / Recolor
+  const handleApplyColorOverlay = async (colorHex: string) => {
+    if (!activeLayer) return;
+
+    setIsRecoloring(true);
+    try {
+      // 1. Instant 0ms client-side recolor using Canvas
+      const localSource = activeLayer.dataUrl || activeLayer.previewUrl;
+      const clientRecoloredDataUrl = await recolorImageDataUrl(localSource, colorHex);
+
+      // 2. Immediately update current active layer so user sees it instantly
+      const updatedLayer: Layer = {
+        ...activeLayer,
+        previewUrl: clientRecoloredDataUrl,
+        dataUrl: clientRecoloredDataUrl,
+        colorOverlayHex: colorHex,
+      };
+      const updatedLayers = layers.map((l) => (l.id === activeLayer.id ? updatedLayer : l));
+      setLayers(updatedLayers);
+
+      // 3. Create new Version for the Version Timeline
+      const colorLabel =
+        colorHex.toLowerCase() === '#000000'
+          ? 'Black Recolor'
+          : colorHex.toLowerCase() === '#ffffff'
+          ? 'White Recolor'
+          : `Recolor (${colorHex.toUpperCase()})`;
+
+      const newVersion: ProjectVersion = {
+        id: crypto.randomUUID(),
+        versionNumber: versions.length + 1,
+        label: colorLabel,
+        fileId: activeLayer.fileId,
+        previewUrl: clientRecoloredDataUrl,
+        dataUrl: clientRecoloredDataUrl,
+        colorOverlayHex: colorHex,
+        provenance: {
+          type: 'recolored',
+          label: `Photoshop Color Overlay: ${colorHex.toUpperCase()}`,
+          timestamp: new Date().toISOString(),
+        },
+        originalPixels: {
+          width: activeLayer.originalWidth,
+          height: activeLayer.originalHeight,
+        },
+        width: activeLayer.originalWidth,
+        height: activeLayer.originalHeight,
+        hasAlpha: activeLayer.hasAlpha,
+      };
+
+      const nextVersions = [...versions, newVersion];
+      setVersions(nextVersions);
+      setCurrentVersionId(newVersion.id);
+      pushHistory(updatedLayers);
+
+      // 4. In background, sync with server /api/recolor so high-res PNG on disk is also updated
+      fetch('/api/recolor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fileId: activeLayer.fileId,
+          imageBase64: activeLayer.dataUrl || clientRecoloredDataUrl,
+          colorHex,
+        }),
+      })
+        .then((res) => res.json())
+        .then((serverData) => {
+          if (serverData && serverData.fileId) {
+            setLayers((prev) =>
+              prev.map((l) =>
+                l.id === activeLayer.id ? { ...l, fileId: serverData.fileId } : l
+              )
+            );
+            setVersions((prev) =>
+              prev.map((v) =>
+                v.id === newVersion.id ? { ...v, fileId: serverData.fileId } : v
+              )
+            );
+          }
+        })
+        .catch((err) => {
+          console.warn('Server recolor sync failed, kept client-side version:', err);
+        });
+    } catch (err) {
+      console.error('Failed to recolor artwork:', err);
+    } finally {
+      setIsRecoloring(false);
+    }
+  };
+
+  const handleResetArtworkColor = () => {
+    // Revert to earliest non-recolored version or initial upload
+    const baseVersion = versions.find((v) => v.provenance.type !== 'recolored') || versions[0];
+    if (baseVersion && activeLayer) {
+      const updated: Layer = {
+        ...activeLayer,
+        fileId: baseVersion.fileId,
+        previewUrl: baseVersion.previewUrl,
+        dataUrl: baseVersion.dataUrl || activeLayer.dataUrl,
+        colorOverlayHex: undefined,
+      };
+      const newLayers = layers.map((l) => (l.id === activeLayer.id ? updated : l));
+      setLayers(newLayers);
+      pushHistory(newLayers);
+      setCurrentVersionId(baseVersion.id);
+    }
+  };
+
+  const handleClearCanvas = () => {
+    setLayers([]);
+    setActiveLayerId(null);
+    setVersions([]);
+    setCurrentVersionId('');
+    setHistory([]);
+    setHistoryIndex(-1);
+    setValidation(null);
   };
 
   // Keyboard Shortcuts Listener
@@ -685,6 +808,7 @@ export const App: React.FC = () => {
 
       {/* Header */}
       <Header
+        onOpenNewDesign={() => setIsNewDesignOpen(true)}
         onOpenGenerate={() => setIsGenerateOpen(true)}
         onUploadClick={() => fileInputRef.current?.click()}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
@@ -760,6 +884,9 @@ export const App: React.FC = () => {
             isUpscaling={isUpscaling}
             onRunDefringe={handleRunDefringe}
             isDefringing={isDefringing}
+            onApplyColorOverlay={handleApplyColorOverlay}
+            onResetArtworkColor={handleResetArtworkColor}
+            isRecoloring={isRecoloring}
             onExportClick={handleExportClick}
             isExporting={isExporting}
             onCenterLayer={handleCenterLayer}
@@ -841,6 +968,9 @@ export const App: React.FC = () => {
               isUpscaling={isUpscaling}
               onRunDefringe={handleRunDefringe}
               isDefringing={isDefringing}
+              onApplyColorOverlay={handleApplyColorOverlay}
+              onResetArtworkColor={handleResetArtworkColor}
+              isRecoloring={isRecoloring}
               onExportClick={handleExportClick}
               isExporting={isExporting}
               onCenterLayer={handleCenterLayer}
@@ -911,11 +1041,21 @@ export const App: React.FC = () => {
         report={exportModalState.report}
         downloadUrl={exportModalState.downloadUrl}
         filename={exportModalState.filename}
+        onOpenGenerate={() => setIsGenerateOpen(true)}
+        onNewProject={handleClearCanvas}
       />
 
       <ShortcutsModal
         isOpen={isShortcutsOpen}
         onClose={() => setIsShortcutsOpen(false)}
+      />
+
+      <NewDesignModal
+        isOpen={isNewDesignOpen}
+        onClose={() => setIsNewDesignOpen(false)}
+        onChooseGenerate={() => setIsGenerateOpen(true)}
+        onChooseUpload={() => fileInputRef.current?.click()}
+        onClearCanvas={handleClearCanvas}
       />
     </div>
   );

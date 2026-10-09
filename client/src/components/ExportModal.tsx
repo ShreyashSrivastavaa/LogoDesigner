@@ -1,6 +1,6 @@
 import React from 'react';
 import { VerificationReport } from '../types';
-import { CheckCircle2, Download, X, AlertTriangle, FileCheck, ExternalLink } from 'lucide-react';
+import { CheckCircle2, Download, X, AlertTriangle, FileCheck, ExternalLink, Sparkles, PlusCircle } from 'lucide-react';
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -8,6 +8,8 @@ interface ExportModalProps {
   report: VerificationReport | null;
   downloadUrl: string | null;
   filename: string;
+  onOpenGenerate?: () => void;
+  onNewProject?: () => void;
 }
 
 export const ExportModal: React.FC<ExportModalProps> = ({
@@ -16,6 +18,8 @@ export const ExportModal: React.FC<ExportModalProps> = ({
   report,
   downloadUrl,
   filename,
+  onOpenGenerate,
+  onNewProject,
 }) => {
   if (!isOpen || !report) return null;
 
@@ -182,6 +186,41 @@ export const ExportModal: React.FC<ExportModalProps> = ({
               <span>Download Production File ({report.metrics.fileSizeMb} MB)</span>
             </a>
           )}
+
+          {/* Post-Export Next Steps / Generate Another */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '1px solid var(--border-subtle)', paddingTop: '14px', marginTop: '4px' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, textAlign: 'center' }}>
+              DONE WITH THIS ARTWORK? WHAT WOULD YOU LIKE TO DO NEXT?
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              {onOpenGenerate && (
+                <button
+                  className="btn-gradient"
+                  onClick={() => {
+                    onClose();
+                    onOpenGenerate();
+                  }}
+                  style={{ flex: 1, padding: '10px 12px', fontSize: '0.82rem', justifyContent: 'center' }}
+                >
+                  <Sparkles size={14} />
+                  <span>Generate Another (AI)</span>
+                </button>
+              )}
+              {onNewProject && (
+                <button
+                  className="btn-secondary"
+                  onClick={() => {
+                    onClose();
+                    onNewProject();
+                  }}
+                  style={{ flex: 1, padding: '10px 12px', fontSize: '0.82rem', justifyContent: 'center' }}
+                >
+                  <PlusCircle size={14} color="var(--color-canva-violet)" />
+                  <span>Start New Design</span>
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

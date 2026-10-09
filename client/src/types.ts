@@ -15,6 +15,7 @@ export interface Layer {
   hasAlpha: boolean;
   previewUrl: string;
   dataUrl?: string;
+  colorOverlayHex?: string;
 }
 
 export interface GarmentPlacement {
@@ -57,7 +58,7 @@ export interface ProjectVersion {
   previewUrl: string;
   dataUrl?: string;
   provenance: {
-    type: 'original' | 'bg-removed' | 'upscaled' | 'resampled' | 'defringed' | 'edited';
+    type: 'original' | 'bg-removed' | 'upscaled' | 'resampled' | 'defringed' | 'edited' | 'recolored';
     label: string;
     timestamp: string;
   };
@@ -68,6 +69,7 @@ export interface ProjectVersion {
   width: number;
   height: number;
   hasAlpha: boolean;
+  colorOverlayHex?: string;
 }
 
 export interface ValidationReport {

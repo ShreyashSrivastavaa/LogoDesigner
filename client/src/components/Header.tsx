@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   Info,
   Sliders,
+  PlusCircle,
 } from 'lucide-react';
 import { ValidationReport } from '../types';
 
@@ -17,6 +18,7 @@ interface HeaderProps {
   onUploadClick: () => void;
   onOpenShortcuts: () => void;
   onOpenMobileDrawer?: () => void;
+  onOpenNewDesign?: () => void;
   validation: ValidationReport | null;
   projectName: string;
   isPresetVerified?: boolean;
@@ -27,6 +29,7 @@ export const Header: React.FC<HeaderProps> = ({
   onUploadClick,
   onOpenShortcuts,
   onOpenMobileDrawer,
+  onOpenNewDesign,
   validation,
   projectName,
   isPresetVerified = false,
@@ -208,6 +211,19 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Quick Action Buttons */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
         {getStatusBadge() && <div className="mobile-only">{getStatusBadge()}</div>}
+
+        {onOpenNewDesign && (
+          <button
+            className="btn-secondary"
+            onClick={onOpenNewDesign}
+            title="Start a new design / Generate another"
+            style={{ padding: '7px 11px', fontSize: '0.82rem', gap: '5px' }}
+          >
+            <PlusCircle size={14} color="var(--color-canva-violet)" />
+            <span className="hide-mobile">New Design</span>
+            <span className="mobile-only">New</span>
+          </button>
+        )}
 
         <button
           className="btn-gradient"

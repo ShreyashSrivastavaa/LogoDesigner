@@ -244,6 +244,7 @@ app.post('/api/export', async (req, res): Promise<void> => {
         height: l.height,
         rotationDeg: l.rotationDeg || 0,
         opacity: typeof l.opacity === 'number' ? l.opacity : 1.0,
+        colorOverlayHex: l.colorOverlayHex,
       });
     }
 
@@ -450,7 +451,76 @@ app.post('/api/defringe', async (req, res): Promise<void> => {
   }
 });
 
-// 9. AI Generation
+// 9. Artwork Color Overlay / Recolor (Photoshop-style Color Overlay)
+app.post('/api/recolor', async (req, res): Promise<void> => {
+  try {
+    const { fileId, imageBase64, colorHex = '#000000' } = req.body;
+    if (!fileId && !imageBase64) {
+      res.status(400).json({ error: 'fileId or imageBase64 is required' });
+      return;
+    }
+
+    const { buffer, meta } = await resolveFileBuffer(fileId, imageBase64);
+
+    const sanitized = String(colorHex).replace('#', '').trim();
+    let r = 0;
+    let g = 0;
+    let b = 0;
+    if (sanitized.length === 6) {
+      r = parseInt(sanitized.substring(0, 2), 16);
+      g = parseInt(sanitized.substring(2, 4), 16);
+      b = parseInt(sanitized.substring(4, 6), 16);
+    } else if (sanitized.length === 3) {
+      r = parseInt(sanitized[0] + sanitized[0], 16);
+      g = parseInt(sanitized[1] + sanitized[1], 16);
+      b = parseInt(sanitized[2] + sanitized[2], 16);
+    }
+
+    const image = sharp(buffer).ensureAlpha();
+    const { data, info } = await image.raw().toBuffer({ resolveWithObject: true });
+
+    // Photoshop Color Overlay: replace RGB of non-transparent pixels, preserve alpha exactly
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i + 3] > 0) {
+        data[i] = r;
+        data[i + 1] = g;
+        data[i + 2] = b;
+      }
+    }
+
+    const recoloredBuffer = await sharp(data, {
+      raw: {
+        width: info.width,
+        height: info.height,
+        channels: 4,
+      },
+    })
+      .png()
+      .toBuffer();
+
+    const colorName = sanitized.toUpperCase();
+    const newFilename = `${path.parse(meta.filename).name}-color-${colorName}.png`;
+    const stored = await storage.saveFile(recoloredBuffer, newFilename, 'image/png');
+    const pixelAnalysis = await analyzeImageBuffer(recoloredBuffer);
+    const previewDataUrl = `data:image/png;base64,${recoloredBuffer.toString('base64')}`;
+
+    res.json({
+      fileId: stored.fileId,
+      filename: stored.filename,
+      width: info.width,
+      height: info.height,
+      colorHex,
+      pixelAnalysis,
+      url: `/api/files/${stored.fileId}`,
+      previewDataUrl,
+    });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Color overlay failed';
+    res.status(500).json({ error: message });
+  }
+});
+
+// 10. AI Generation
 app.post('/api/generate', async (req, res): Promise<void> => {
   try {
     const {

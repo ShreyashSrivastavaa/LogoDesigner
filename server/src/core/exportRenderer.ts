@@ -15,6 +15,7 @@ export interface LayerRenderSpec {
   height: number; // Placed height on export canvas (px)
   rotationDeg?: number;
   opacity?: number; // 0 to 1
+  colorOverlayHex?: string;
 }
 
 export interface ExportRenderRequest {
@@ -122,6 +123,26 @@ export async function renderPrintArtwork(
       const op = Math.max(0, Math.min(1, layer.opacity));
       for (let i = 3; i < data.length; i += 4) {
         data[i] = Math.round(data[i] * op);
+      }
+      layerPipeline = sharp(data, {
+        raw: {
+          width: info.width,
+          height: info.height,
+          channels: 4,
+        },
+      });
+    }
+
+    // Apply Photoshop-style color overlay if specified (recolors all non-transparent pixels, preserves alpha)
+    if (layer.colorOverlayHex) {
+      const { r, g, b } = hexToRgb(layer.colorOverlayHex);
+      const { data, info } = await layerPipeline.raw().toBuffer({ resolveWithObject: true });
+      for (let i = 0; i < data.length; i += 4) {
+        if (data[i + 3] > 0) {
+          data[i] = r;
+          data[i + 1] = g;
+          data[i + 2] = b;
+        }
       }
       layerPipeline = sharp(data, {
         raw: {
