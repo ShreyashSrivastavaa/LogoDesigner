@@ -146,7 +146,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
         height: '100%',
         position: 'relative',
         overflow: 'hidden',
-        background: '#09090C',
+        background: 'radial-gradient(ellipse at 50% 30%, #fcfbfe 0%, #f5f2fa 45%, #eaf1f8 100%)',
         cursor: currentTool === 'hand' || isPanning ? 'grab' : 'default',
         display: 'flex',
         alignItems: 'center',
@@ -155,7 +155,6 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     >
       {/* Top Floating View Controls */}
       <div
-        className="glass-panel"
         style={{
           position: 'absolute',
           top: '16px',
@@ -165,8 +164,11 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
           padding: '6px 14px',
           display: 'flex',
           alignItems: 'center',
-          gap: '16px',
-          boxShadow: 'var(--shadow-panel)',
+          gap: '14px',
+          background: '#ffffff',
+          borderRadius: '9999px',
+          border: '1px solid var(--border-strong)',
+          boxShadow: 'var(--shadow-subtle)',
         }}
       >
         {/* Mockup Preview Toggle */}
@@ -175,10 +177,12 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
           className="btn-secondary"
           style={{
             fontSize: '0.78rem',
-            padding: '5px 10px',
-            background: showMockup ? 'rgba(0, 223, 216, 0.15)' : 'transparent',
-            borderColor: showMockup ? 'var(--accent-cyan)' : 'var(--border-subtle)',
-            color: showMockup ? 'var(--accent-cyan)' : 'var(--text-secondary)',
+            padding: '5px 12px',
+            borderRadius: '9999px',
+            background: showMockup ? 'rgba(139, 61, 255, 0.1)' : 'transparent',
+            borderColor: showMockup ? 'var(--color-canva-violet)' : 'var(--border-strong)',
+            color: showMockup ? 'var(--color-canva-violet)' : 'var(--text-secondary)',
+            fontWeight: 500,
           }}
         >
           <Shirt size={14} />
@@ -189,7 +193,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
         {/* Garment Color Swatches */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Color:</span>
+          <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', fontWeight: 500 }}>Color:</span>
           {garmentColors.map((c) => (
             <button
               key={c.hex}
@@ -202,10 +206,11 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 background: c.hex,
                 border:
                   selectedColorHex === c.hex
-                    ? '2px solid var(--accent-cyan)'
-                    : '1px solid rgba(255, 255, 255, 0.2)',
+                    ? '2px solid var(--color-canva-violet)'
+                    : '1px solid rgba(0, 0, 0, 0.15)',
+                boxShadow: selectedColorHex === c.hex ? '0 0 0 2px rgba(139, 61, 255, 0.25)' : 'none',
                 cursor: 'pointer',
-                transition: 'transform 0.15s ease',
+                transition: 'all 0.15s ease',
                 transform: selectedColorHex === c.hex ? 'scale(1.2)' : 'scale(1)',
               }}
             />
@@ -289,9 +294,10 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
             width: `${canvasWidthPx}px`,
             height: `${canvasHeightPx}px`,
             position: 'relative',
-            backgroundColor: showMockup ? 'transparent' : undefined,
-            border: '2px solid rgba(0, 223, 216, 0.85)',
-            boxShadow: '0 0 25px rgba(0, 223, 216, 0.15)',
+            backgroundColor: showMockup ? 'transparent' : '#ffffff',
+            border: '2px solid var(--color-canva-violet)',
+            boxShadow: 'var(--shadow-floating-canvas)',
+            borderRadius: '4px',
             zIndex: 2,
           }}
         >
@@ -303,18 +309,19 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
               left: `${safeMarginPx}px`,
               right: `${safeMarginPx}px`,
               bottom: `${safeMarginPx}px`,
-              border: '1px dashed rgba(245, 166, 35, 0.6)',
+              border: '1.5px dashed rgba(139, 61, 255, 0.4)',
               pointerEvents: 'none',
             }}
           >
             <span
               style={{
                 position: 'absolute',
-                top: '-16px',
+                top: '-18px',
                 left: '4px',
-                fontSize: '0.62rem',
-                fontFamily: 'var(--font-mono)',
-                color: 'var(--accent-amber)',
+                fontSize: '0.64rem',
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 600,
+                color: 'var(--color-canva-violet)',
               }}
             >
               Safe Area Guide ({currentPlacement.safeMarginIn}")
@@ -329,7 +336,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
               left: 0,
               right: 0,
               height: '1px',
-              background: 'rgba(255, 255, 255, 0.1)',
+              background: 'rgba(0, 0, 0, 0.08)',
               pointerEvents: 'none',
             }}
           />
@@ -340,7 +347,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
               bottom: 0,
               left: '50%',
               width: '1px',
-              background: 'rgba(255, 255, 255, 0.1)',
+              background: 'rgba(0, 0, 0, 0.08)',
               pointerEvents: 'none',
             }}
           />
@@ -360,7 +367,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 cursor: currentTool === 'select' ? 'move' : 'default',
                 outline:
                   currentTool === 'select'
-                    ? '1.5px solid var(--accent-cyan)'
+                    ? '1.5px solid var(--color-canva-violet)'
                     : 'none',
               }}
             >
@@ -388,8 +395,9 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                       bottom: '-6px',
                       width: '12px',
                       height: '12px',
-                      background: 'var(--accent-cyan)',
-                      border: '2px solid #08080A',
+                      background: 'var(--color-canva-violet)',
+                      border: '2px solid #ffffff',
+                      boxShadow: '0 1px 4px rgba(139, 61, 255, 0.4)',
                       borderRadius: '2px',
                       cursor: 'se-resize',
                     }}
@@ -403,8 +411,9 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                       top: '-6px',
                       width: '12px',
                       height: '12px',
-                      background: 'var(--accent-cyan)',
-                      border: '2px solid #08080A',
+                      background: 'var(--color-canva-violet)',
+                      border: '2px solid #ffffff',
+                      boxShadow: '0 1px 4px rgba(139, 61, 255, 0.4)',
                       borderRadius: '2px',
                       cursor: 'nw-resize',
                     }}

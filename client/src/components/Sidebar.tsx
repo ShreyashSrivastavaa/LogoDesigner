@@ -143,20 +143,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 flex: 1,
                 padding: '12px 4px',
                 background: isActive ? 'var(--bg-studio)' : 'transparent',
-                color: isActive ? 'var(--accent-cyan)' : 'var(--text-muted)',
+                color: isActive ? 'var(--color-canva-violet)' : 'var(--color-slate-smoke)',
                 border: 'none',
-                borderBottom: isActive ? '2px solid var(--accent-cyan)' : '2px solid transparent',
+                borderBottom: isActive ? '2px solid var(--color-canva-violet)' : '2px solid transparent',
                 cursor: 'pointer',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 gap: '4px',
-                fontSize: '0.72rem',
-                fontWeight: 600,
+                fontSize: '0.74rem',
+                fontWeight: isActive ? 600 : 500,
                 transition: 'all 0.15s ease',
               }}
             >
-              <Icon size={15} />
+              <Icon size={16} />
               <span>{tab.label}</span>
             </button>
           );
@@ -242,7 +242,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   rel="noreferrer"
                   style={{
                     fontSize: '0.7rem',
-                    color: 'var(--accent-cyan)',
+                    color: 'var(--color-canva-violet)',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '4px',
@@ -296,9 +296,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     style={{
                       flex: 1,
                       justifyContent: 'center',
-                      background: targetDpi === dpiVal ? 'rgba(0, 223, 216, 0.15)' : 'var(--bg-control)',
-                      borderColor: targetDpi === dpiVal ? 'var(--accent-cyan)' : 'var(--border-subtle)',
-                      color: targetDpi === dpiVal ? 'var(--accent-cyan)' : 'var(--text-secondary)',
+                      background: targetDpi === dpiVal ? 'rgba(139, 61, 255, 0.1)' : 'var(--bg-control)',
+                      borderColor: targetDpi === dpiVal ? 'var(--color-canva-violet)' : 'var(--border-subtle)',
+                      color: targetDpi === dpiVal ? 'var(--color-canva-violet)' : 'var(--text-secondary)',
                       fontFamily: 'var(--font-mono)',
                       fontWeight: 600,
                     }}
@@ -312,16 +312,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Live Computed Output Canvas Size */}
             <div
               style={{
-                background: 'rgba(0, 223, 216, 0.05)',
-                border: '1px solid rgba(0, 223, 216, 0.2)',
+                background: 'rgba(139, 61, 255, 0.04)',
+                border: '1px solid rgba(139, 61, 255, 0.18)',
                 borderRadius: 'var(--radius-md)',
                 padding: '12px',
               }}
             >
-              <div style={{ fontSize: '0.72rem', color: 'var(--accent-cyan)', fontWeight: 600, marginBottom: '4px' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--color-canva-violet)', fontWeight: 600, marginBottom: '4px' }}>
                 EXACT EXPORT CANVAS DIMENSIONS
               </div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.25rem', fontWeight: 700, color: '#FFF' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 {computedPxW} × {computedPxH} <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>pixels</span>
               </div>
               <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
@@ -363,8 +363,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <div
                   key={layer.id}
                   style={{
-                    background: activeLayer?.id === layer.id ? 'rgba(0, 223, 216, 0.08)' : 'var(--bg-panel)',
-                    border: activeLayer?.id === layer.id ? '1px solid var(--accent-cyan)' : '1px solid var(--border-subtle)',
+                    background: activeLayer?.id === layer.id ? 'rgba(139, 61, 255, 0.06)' : 'var(--bg-panel)',
+                    border: activeLayer?.id === layer.id ? '1px solid var(--color-canva-violet)' : '1px solid var(--border-subtle)',
                     borderRadius: 'var(--radius-md)',
                     padding: '10px',
                     display: 'flex',
@@ -377,10 +377,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       <img
                         src={layer.previewUrl}
                         alt="thumb"
-                        style={{ width: '32px', height: '32px', objectFit: 'contain', background: '#000', borderRadius: '4px' }}
+                        style={{ width: '32px', height: '32px', objectFit: 'contain', background: '#f8f9fa', border: '1px solid var(--border-subtle)', borderRadius: '4px' }}
                       />
                       <div>
-                        <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#FFF' }}>{layer.name}</div>
+                        <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)' }}>{layer.name}</div>
                         <div style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
                           {layer.originalWidth}x{layer.originalHeight}px • {layer.width}"×{layer.height}"
                         </div>
@@ -444,8 +444,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                <Wand2 size={16} color="var(--accent-cyan)" />
-                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#FFF' }}>BACKGROUND REMOVAL</span>
+                <Wand2 size={16} color="var(--color-canva-violet)" />
+                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)' }}>BACKGROUND REMOVAL</span>
               </div>
 
               {/* Auto-Detection Badge */}
@@ -454,7 +454,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  background: 'rgba(0, 0, 0, 0.25)',
+                  background: 'var(--bg-control)',
                   border: '1px solid var(--border-subtle)',
                   borderRadius: 'var(--radius-sm)',
                   padding: '5px 8px',
@@ -471,16 +471,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     borderRadius: '4px',
                     background:
                       detectedBgMode === 'graphic'
-                        ? 'rgba(0, 223, 216, 0.15)'
-                        : 'rgba(121, 40, 202, 0.15)',
+                        ? 'rgba(139, 61, 255, 0.1)'
+                        : 'rgba(233, 80, 247, 0.1)',
                     color:
                       detectedBgMode === 'graphic'
-                        ? 'var(--accent-cyan)'
-                        : 'var(--accent-purple)',
+                        ? 'var(--color-canva-violet)'
+                        : 'var(--color-plasma-pink)',
                     border:
                       detectedBgMode === 'graphic'
-                        ? '1px solid rgba(0, 223, 216, 0.3)'
-                        : '1px solid rgba(121, 40, 202, 0.3)',
+                        ? '1px solid rgba(139, 61, 255, 0.25)'
+                        : '1px solid rgba(233, 80, 247, 0.25)',
                   }}
                 >
                   {detectedBgMode === 'graphic'
@@ -495,11 +495,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div
                 style={{
                   display: 'flex',
-                  gap: '3px',
-                  background: 'rgba(0, 0, 0, 0.35)',
+                  gap: '4px',
+                  background: 'var(--bg-control)',
                   padding: '3px',
-                  borderRadius: '6px',
+                  borderRadius: 'var(--radius-md)',
                   marginBottom: '10px',
+                  border: '1px solid var(--border-subtle)',
                 }}
               >
                 <button
@@ -508,12 +509,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   style={{
                     flex: 1,
                     padding: '5px 4px',
-                    fontSize: '0.70rem',
-                    fontWeight: selectedBgMode === 'auto' ? 700 : 500,
-                    background: selectedBgMode === 'auto' ? 'var(--bg-card)' : 'transparent',
-                    color: selectedBgMode === 'auto' ? '#FFF' : 'var(--text-muted)',
+                    fontSize: '0.72rem',
+                    fontWeight: selectedBgMode === 'auto' ? 600 : 500,
+                    background: selectedBgMode === 'auto' ? '#ffffff' : 'transparent',
+                    color: selectedBgMode === 'auto' ? 'var(--color-ink-black)' : 'var(--color-slate-smoke)',
+                    boxShadow: selectedBgMode === 'auto' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
                     border: 'none',
-                    borderRadius: '4px',
+                    borderRadius: 'var(--radius-sm)',
                     cursor: 'pointer',
                   }}
                 >
@@ -525,12 +527,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   style={{
                     flex: 1.4,
                     padding: '5px 4px',
-                    fontSize: '0.70rem',
-                    fontWeight: selectedBgMode === 'graphic' ? 700 : 500,
-                    background: selectedBgMode === 'graphic' ? 'var(--bg-card)' : 'transparent',
-                    color: selectedBgMode === 'graphic' ? 'var(--accent-cyan)' : 'var(--text-muted)',
+                    fontSize: '0.72rem',
+                    fontWeight: selectedBgMode === 'graphic' ? 600 : 500,
+                    background: selectedBgMode === 'graphic' ? '#ffffff' : 'transparent',
+                    color: selectedBgMode === 'graphic' ? 'var(--color-canva-violet)' : 'var(--color-slate-smoke)',
+                    boxShadow: selectedBgMode === 'graphic' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
                     border: 'none',
-                    borderRadius: '4px',
+                    borderRadius: 'var(--radius-sm)',
                     cursor: 'pointer',
                   }}
                 >
@@ -542,12 +545,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   style={{
                     flex: 1.4,
                     padding: '5px 4px',
-                    fontSize: '0.70rem',
-                    fontWeight: selectedBgMode === 'photo' ? 700 : 500,
-                    background: selectedBgMode === 'photo' ? 'var(--bg-card)' : 'transparent',
-                    color: selectedBgMode === 'photo' ? 'var(--accent-purple)' : 'var(--text-muted)',
+                    fontSize: '0.72rem',
+                    fontWeight: selectedBgMode === 'photo' ? 600 : 500,
+                    background: selectedBgMode === 'photo' ? '#ffffff' : 'transparent',
+                    color: selectedBgMode === 'photo' ? 'var(--color-plasma-pink)' : 'var(--color-slate-smoke)',
+                    boxShadow: selectedBgMode === 'photo' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
                     border: 'none',
-                    borderRadius: '4px',
+                    borderRadius: 'var(--radius-sm)',
                     cursor: 'pointer',
                   }}
                 >
@@ -587,7 +591,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       gap: '8px',
                       cursor: 'pointer',
                       fontSize: '0.72rem',
-                      color: preserveFineDetail ? '#FFF' : 'var(--text-muted)',
+                      color: preserveFineDetail ? 'var(--text-primary)' : 'var(--text-muted)',
                     }}
                   >
                     <input
@@ -674,8 +678,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                <Sparkles size={16} color="var(--accent-purple)" />
-                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#FFF' }}>UPSCALE RESOLUTION</span>
+                <Sparkles size={16} color="var(--color-canva-violet)" />
+                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)' }}>UPSCALE RESOLUTION</span>
               </div>
               <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', lineHeight: '1.4', marginBottom: '10px' }}>
                 Lanczos3 resampling with edge sharpening. Real detail baseline is tracked immutably.
@@ -708,8 +712,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                <Sliders size={16} color="var(--accent-amber)" />
-                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#FFF' }}>EDGE DEFRINGE & CLEANUP</span>
+                <Sliders size={16} color="var(--color-solar-orange)" />
+                <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)' }}>EDGE DEFRINGE & CLEANUP</span>
               </div>
               <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', lineHeight: '1.4', marginBottom: '10px' }}>
                 Eliminate halo fringes and near-invisible ghost pixels that cause white underbase dirt on black shirts.
@@ -748,20 +752,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 borderRadius: 'var(--radius-md)',
                 background:
                   validation.status === 'ready'
-                    ? 'rgba(0, 230, 118, 0.1)'
+                    ? 'rgba(0, 177, 0, 0.08)'
                     : validation.status === 'ready_with_warnings'
-                    ? 'rgba(245, 166, 35, 0.1)'
-                    : 'rgba(255, 51, 102, 0.1)',
+                    ? 'rgba(255, 97, 5, 0.08)'
+                    : 'rgba(255, 61, 77, 0.08)',
                 border: `1px solid ${
                   validation.status === 'ready'
-                    ? 'rgba(0, 230, 118, 0.3)'
+                    ? 'rgba(0, 177, 0, 0.25)'
                     : validation.status === 'ready_with_warnings'
-                    ? 'rgba(245, 166, 35, 0.3)'
-                    : 'rgba(255, 51, 102, 0.3)'
+                    ? 'rgba(255, 97, 5, 0.25)'
+                    : 'rgba(255, 61, 77, 0.25)'
                 }`,
               }}
             >
-              <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#FFF', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 {validation.status === 'ready' && <CheckCircle2 size={16} color="var(--status-ready)" />}
                 {validation.status === 'ready_with_warnings' && <AlertTriangle size={16} color="var(--status-warning)" />}
                 {(validation.status === 'needs_upscale' || validation.status === 'check_dimensions') && (
@@ -770,7 +774,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <span>{validation.statusLabel.toUpperCase()}</span>
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                Effective Print DPI: <strong style={{ color: '#FFF' }}>{validation.metrics.effectiveDpi} DPI</strong> (Qikink min: 150)
+                Effective Print DPI: <strong style={{ color: 'var(--text-primary)' }}>{validation.metrics.effectiveDpi} DPI</strong> (Qikink min: 150)
               </div>
             </div>
 
@@ -779,7 +783,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '6px' }}>METRICS BREAKDOWN</div>
               <div style={{ fontSize: '0.75rem', display: 'flex', justifyContent: 'space-between', padding: '3px 0' }}>
                 <span style={{ color: 'var(--text-secondary)' }}>Placed Size:</span>
-                <span style={{ fontFamily: 'var(--font-mono)', color: '#FFF' }}>{validation.metrics.placedWidthIn}" × {validation.metrics.placedHeightIn}"</span>
+                <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-primary)' }}>{validation.metrics.placedWidthIn}" × {validation.metrics.placedHeightIn}"</span>
               </div>
               <div style={{ fontSize: '0.75rem', display: 'flex', justifyContent: 'space-between', padding: '3px 0' }}>
                 <span style={{ color: 'var(--text-secondary)' }}>Effective Resolution:</span>
@@ -789,7 +793,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
               <div style={{ fontSize: '0.75rem', display: 'flex', justifyContent: 'space-between', padding: '3px 0' }}>
                 <span style={{ color: 'var(--text-secondary)' }}>Real Detail Baseline:</span>
-                <span style={{ fontFamily: 'var(--font-mono)', color: '#FFF' }}>{validation.metrics.realDetailDpi} DPI</span>
+                <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-primary)' }}>{validation.metrics.realDetailDpi} DPI</span>
               </div>
             </div>
 
@@ -840,11 +844,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     style={{
                       flex: 1,
                       justifyContent: 'center',
-                      background: exportFormat === fmt ? 'rgba(0, 223, 216, 0.15)' : 'var(--bg-control)',
-                      borderColor: exportFormat === fmt ? 'var(--accent-cyan)' : 'var(--border-subtle)',
-                      color: exportFormat === fmt ? 'var(--accent-cyan)' : 'var(--text-secondary)',
-                      fontFamily: 'var(--font-mono)',
-                      fontWeight: 700,
+                      background: exportFormat === fmt ? 'rgba(139, 61, 255, 0.1)' : '#ffffff',
+                      borderColor: exportFormat === fmt ? 'var(--color-canva-violet)' : 'var(--border-strong)',
+                      color: exportFormat === fmt ? 'var(--color-canva-violet)' : 'var(--color-slate-smoke)',
+                      fontFamily: 'var(--font-heading)',
+                      fontWeight: 600,
                     }}
                   >
                     {fmt} {fmt === 'PNG' ? '(Transparent)' : '(Solid BG)'}
@@ -869,11 +873,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {/* Specifications Summary */}
             <div style={{ background: 'var(--bg-panel)', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
               <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '6px' }}>EXPORT SPECIFICATION</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
-                • Dimensions: <strong style={{ color: '#FFF' }}>{computedPxW} × {computedPxH} px</strong><br />
-                • Resolution: <strong style={{ color: '#FFF' }}>{targetDpi} DPI</strong> (pHYs metadata written)<br />
-                • Color Mode: <strong style={{ color: '#FFF' }}>Truecolor RGBA (Type 6, 8-bit)</strong><br />
-                • Garment: <strong>{selectedProduct.name} ({selectedPlacement.name})</strong>
+              <div style={{ fontSize: '0.76rem', color: 'var(--color-slate-smoke)', lineHeight: '1.6' }}>
+                • Dimensions: <strong style={{ color: 'var(--color-ink-black)' }}>{computedPxW} × {computedPxH} px</strong><br />
+                • Resolution: <strong style={{ color: 'var(--color-ink-black)' }}>{targetDpi} DPI</strong> (pHYs metadata written)<br />
+                • Color Mode: <strong style={{ color: 'var(--color-ink-black)' }}>Truecolor RGBA (Type 6, 8-bit)</strong><br />
+                • Garment: <strong style={{ color: 'var(--color-ink-black)' }}>{selectedProduct.name} ({selectedPlacement.name})</strong>
               </div>
             </div>
 

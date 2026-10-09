@@ -1,43 +1,92 @@
+/* ==========================================================================
+   Canva Design System — Zenith Lab Print Studio
+   Candy-colored creative studio: a white canvas floating inside a gradient sky
+   ========================================================================== */
+
 :root {
-  --bg-app: #08080a;
-  --bg-studio: #0e0e12;
-  --bg-panel: #141419;
-  --bg-panel-elevated: #1a1a22;
-  --bg-control: #22222c;
-  --bg-control-hover: #2c2c38;
-  --bg-control-active: #363644;
+  /* Core Canva Brand Palette */
+  --color-canva-violet: #8b3dff;
+  --color-soft-iris: #a370fc;
+  --color-deep-amethyst: #9729ff;
+  --color-ember-red: #ff3d4d;
+  --color-plasma-pink: #e950f7;
+  --color-solar-orange: #ff6105;
+  --color-ink-black: #0f1015;
+  --color-pure-black: #000000;
+  --color-off-black: #231f20;
+  --color-slate-smoke: #575a5f;
+  --color-pale-mist: #d7d9de;
+  --color-paper-white: #ffffff;
 
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-strong: rgba(255, 255, 255, 0.14);
-  --border-focus: #00dfd8;
+  /* Saturated Signature Gradients */
+  --gradient-teal-violet-sky: linear-gradient(135deg, rgb(0, 196, 204), rgb(125, 42, 232));
+  --gradient-coral-sunset: linear-gradient(rgb(255, 59, 76) 5.8%, rgb(255, 98, 18) 32.1%, rgb(255, 205, 179) 100%);
+  --gradient-emerald-meadow: linear-gradient(rgb(0, 125, 38) 0%, rgb(0, 177, 0) 60%, rgb(225, 255, 192) 83%);
+  --gradient-ulraviolet-horizon: linear-gradient(rgb(153, 43, 255), rgb(90, 50, 250) 30.09%, rgb(19, 163, 181) 56.76%, rgb(147, 232, 246) 76.85%, rgb(241, 235, 255) 95.28%, rgb(255, 255, 255));
+  --gradient-studio-sky: radial-gradient(circle at 50% 25%, #ffffff 0%, #f6f3fc 45%, #ecf4f8 100%);
 
-  --text-primary: #f5f5f7;
-  --text-secondary: #a1a1aa;
-  --text-muted: #6b6b76;
-  --text-inverse: #08080a;
+  /* Light Studio Surfaces */
+  --bg-app: #f5f6f9;
+  --bg-studio: #ffffff;
+  --bg-panel: #ffffff;
+  --bg-panel-elevated: #ffffff;
+  --bg-control: #f3f5f8;
+  --bg-control-hover: #e9ecf2;
+  --bg-control-active: #dfe3ec;
 
-  --accent-cyan: #00dfd8;
-  --accent-cyan-glow: rgba(0, 223, 216, 0.25);
-  --accent-pink: #ff3366;
-  --accent-purple: #7928ca;
-  --accent-amber: #f5a623;
-  --accent-emerald: #00e676;
+  /* Borders & Dividers */
+  --border-subtle: #e6e8ed;
+  --border-strong: #d7d9de;
+  --border-focus: #8b3dff;
 
-  --status-ready: #00e676;
-  --status-warning: #f5a623;
-  --status-error: #ff3366;
+  /* Typography Colors */
+  --text-primary: #0f1015;
+  --text-secondary: #575a5f;
+  --text-muted: #8b8f97;
+  --text-tertiary: #a1a6b0;
+  --text-inverse: #ffffff;
 
-  --font-heading: 'Outfit', sans-serif;
-  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Accent Mappings */
+  --accent-cyan: #00c4cc;
+  --accent-cyan-glow: rgba(0, 196, 204, 0.25);
+  --accent-pink: #e950f7;
+  --accent-purple: #8b3dff;
+  --accent-amber: #ff6105;
+  --accent-emerald: #00b100;
+
+  /* Status Colors */
+  --status-ready: #00872e;
+  --status-warning: #e05300;
+  --status-error: #ff3d4d;
+
+  /* Humanist Typography */
+  --font-heading: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-ui: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  --radius-sm: 4px;
+  /* Spacing Scale */
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+
+  /* Border Radii (Canva 8px standard, 16px feature, 9999px pills) */
+  --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
+  --radius-pill: 9999px;
 
-  --shadow-panel: 0 8px 32px rgba(0, 0, 0, 0.45);
-  --shadow-glow: 0 0 20px rgba(0, 223, 216, 0.2);
+  /* Canva Elevation & Shadows */
+  --shadow-subtle: rgba(64, 79, 109, 0.06) 0px 0px 0px 0.5px, rgba(24, 44, 89, 0.137) 0px 2px 4px 0px, rgba(24, 44, 89, 0.07) 0px 6px 12px 0px;
+  --shadow-subtle-2: rgba(53, 65, 90, 0.2) 0px 0px 0px 1px inset;
+  --shadow-subtle-3: rgba(255, 255, 255, 0.2) 0px 0px 0px 1px inset;
+  --shadow-panel: rgba(64, 79, 109, 0.07) 0px 3px 12px 0px, rgba(24, 44, 89, 0.03) 0px 1px 3px 0px;
+  --shadow-floating-canvas: rgba(64, 79, 109, 0.14) 0px 20px 48px -10px, rgba(24, 44, 89, 0.08) 0px 4px 14px 0px;
+  --shadow-glow: 0 0 16px rgba(139, 61, 255, 0.25);
 }
 
 * {
@@ -56,6 +105,7 @@ body {
   height: 100vh;
   width: 100vw;
   user-select: none;
+  letter-spacing: -0.01em;
 }
 
 /* Custom Scrollbars */
@@ -67,45 +117,45 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(64, 79, 109, 0.18);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(64, 79, 109, 0.3);
 }
 
 /* Typography Helpers */
 .font-heading {
   font-family: var(--font-heading);
+  letter-spacing: -0.015em;
 }
 .font-mono {
   font-family: var(--font-mono);
 }
 
-/* Transparency Checkerboard (View-only canvas background) */
+/* Checkerboard Pattern for Transparent Artwork Visuals */
 .checkerboard-pattern {
-  background-color: #1a1a20;
-  background-image: linear-gradient(45deg, #121216 25%, transparent 25%),
-    linear-gradient(-45deg, #121216 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #121216 75%),
-    linear-gradient(-45deg, transparent 75%, #121216 75%);
-  background-size: 20px 20px;
-  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  background-color: #ffffff;
+  background-image: linear-gradient(45deg, #f0f2f5 25%, transparent 25%),
+    linear-gradient(-45deg, #f0f2f5 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #f0f2f5 75%),
+    linear-gradient(-45deg, transparent 75%, #f0f2f5 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
 }
 
-/* Streetwear Glassmorphic Panel */
+/* Canva Clean White Surface / Feature Cards */
 .glass-panel {
-  background: rgba(20, 20, 25, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  background: #ffffff;
+  border: 0.5px solid var(--color-pale-mist);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-subtle);
 }
 
 /* Animations */
 @keyframes pulse-subtle {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  50% { opacity: 0.65; }
 }
 .animate-pulse-subtle {
   animation: pulse-subtle 2s infinite ease-in-out;
@@ -118,31 +168,32 @@ body {
   animation: spin 1s linear infinite;
 }
 
-/* Primary Button Styling */
+/* Primary Dark Action Button (Canva Dark Inverse Button) */
 .btn-primary {
-  background: linear-gradient(135deg, #00dfd8 0%, #00a8a3 100%);
-  color: #08080a;
+  background: var(--color-ink-black);
+  color: #ffffff;
   font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 0.9rem;
-  letter-spacing: 0.04em;
+  font-weight: 500;
+  font-size: 0.88rem;
+  letter-spacing: -0.01em;
   padding: 10px 18px;
   border-radius: var(--radius-md);
   border: none;
+  box-shadow: var(--shadow-subtle-3);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 14px rgba(0, 223, 216, 0.3);
+  transition: all 0.15s ease;
 }
 .btn-primary:hover:not(:disabled) {
+  background: #23252b;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0, 223, 216, 0.45);
+  box-shadow: rgba(15, 16, 21, 0.25) 0px 4px 12px 0px;
 }
 .btn-primary:active:not(:disabled) {
-  transform: translateY(1px);
+  transform: translateY(0);
 }
 .btn-primary:disabled {
   opacity: 0.45;
@@ -150,16 +201,41 @@ body {
   box-shadow: none;
 }
 
-/* Secondary Button */
+/* Canva Gradient Accent Button (For AI / Magic Studio actions) */
+.btn-gradient {
+  background: var(--gradient-teal-violet-sky);
+  color: #ffffff;
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: 0.88rem;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(139, 61, 255, 0.25);
+}
+.btn-gradient:hover:not(:disabled) {
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(139, 61, 255, 0.35);
+}
+
+/* Secondary Button (Clean White Pill / Card style) */
 .btn-secondary {
-  background: var(--bg-control);
+  background: #ffffff;
   color: var(--text-primary);
   font-family: var(--font-ui);
   font-weight: 500;
-  font-size: 0.85rem;
-  padding: 8px 14px;
+  font-size: 0.84rem;
+  padding: 7px 14px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-strong);
+  box-shadow: rgba(64, 79, 109, 0.04) 0px 1px 2px 0px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -167,64 +243,62 @@ body {
   transition: all 0.15s ease;
 }
 .btn-secondary:hover:not(:disabled) {
-  background: var(--bg-control-hover);
-  border-color: var(--border-strong);
+  background: var(--bg-control);
+  border-color: #c4c7d0;
 }
 .btn-secondary:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-/* Accent Glow Badges */
+/* Status & Provenance Badges */
 .badge-verified {
-  background: rgba(0, 230, 118, 0.12);
-  color: var(--status-ready);
-  border: 1px solid rgba(0, 230, 118, 0.3);
-  padding: 2px 7px;
-  border-radius: 4px;
+  background: rgba(0, 177, 0, 0.09);
+  color: #007d26;
+  border: 1px solid rgba(0, 177, 0, 0.25);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
   font-size: 0.72rem;
-  font-family: var(--font-mono);
+  font-family: var(--font-ui);
   font-weight: 600;
-  letter-spacing: 0.03em;
   display: inline-flex;
   align-items: center;
   gap: 4px;
 }
 
 .badge-unverified {
-  background: rgba(245, 166, 35, 0.12);
-  color: var(--status-warning);
-  border: 1px solid rgba(245, 166, 35, 0.3);
-  padding: 2px 7px;
-  border-radius: 4px;
+  background: rgba(255, 97, 5, 0.09);
+  color: #d94e00;
+  border: 1px solid rgba(255, 97, 5, 0.25);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
   font-size: 0.72rem;
-  font-family: var(--font-mono);
+  font-family: var(--font-ui);
   font-weight: 600;
-  letter-spacing: 0.03em;
   display: inline-flex;
   align-items: center;
   gap: 4px;
 }
 
-/* Form Inputs */
+/* Form Inputs (Light & Crisp) */
 input[type="text"],
 input[type="number"],
 select,
 textarea {
-  background: var(--bg-studio);
+  background: #ffffff;
   color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   padding: 8px 12px;
   font-family: var(--font-ui);
-  font-size: 0.85rem;
+  font-size: 0.86rem;
   outline: none;
-  transition: border-color 0.2s ease;
+  transition: all 0.15s ease;
   width: 100%;
 }
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 0 1px var(--accent-cyan);
+  border-color: var(--color-canva-violet);
+  box-shadow: 0 0 0 3px rgba(139, 61, 255, 0.12);
 }

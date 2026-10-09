@@ -79,9 +79,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              background: isActive ? 'rgba(0, 223, 216, 0.15)' : 'transparent',
-              color: isActive ? 'var(--accent-cyan)' : 'var(--text-secondary)',
-              border: isActive ? '1px solid rgba(0, 223, 216, 0.5)' : '1px solid transparent',
+              background: isActive ? 'rgba(139, 61, 255, 0.1)' : 'transparent',
+              color: isActive ? 'var(--color-canva-violet)' : 'var(--color-slate-smoke)',
+              border: isActive ? '1px solid rgba(139, 61, 255, 0.35)' : '1px solid transparent',
+              boxShadow: isActive ? '0 1px 3px rgba(139, 61, 255, 0.15)' : 'none',
               cursor: 'pointer',
               transition: 'all 0.15s ease',
             }}

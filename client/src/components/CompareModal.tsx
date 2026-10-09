@@ -28,8 +28,8 @@ export const CompareModal: React.FC<CompareModalProps> = ({
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(0, 0, 0, 0.85)',
-        backdropFilter: 'blur(12px)',
+        background: 'rgba(15, 16, 21, 0.45)',
+        backdropFilter: 'blur(10px)',
         zIndex: 100,
         display: 'flex',
         flexDirection: 'column',
@@ -49,25 +49,27 @@ export const CompareModal: React.FC<CompareModalProps> = ({
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <SplitSquareVertical size={18} color="var(--accent-cyan)" />
-            <span style={{ fontSize: '1rem', fontWeight: 700, color: '#FFF' }}>
+            <SplitSquareVertical size={18} color="var(--color-canva-violet)" />
+            <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
               BEFORE / AFTER COMPARISON
             </span>
           </div>
 
           {/* Background Toggle */}
-          <div style={{ display: 'flex', gap: '4px', background: 'var(--bg-studio)', padding: '2px', borderRadius: '6px' }}>
+          <div style={{ display: 'flex', gap: '4px', background: 'var(--bg-control)', padding: '3px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
             {(['checker', 'black', 'white'] as const).map((mode) => (
               <button
                 key={mode}
                 onClick={() => setBgMode(mode)}
                 style={{
-                  padding: '4px 8px',
+                  padding: '4px 10px',
                   fontSize: '0.72rem',
+                  fontWeight: 500,
                   border: 'none',
-                  borderRadius: '4px',
-                  background: bgMode === mode ? 'var(--bg-control-active)' : 'transparent',
-                  color: bgMode === mode ? '#FFF' : 'var(--text-muted)',
+                  borderRadius: 'var(--radius-sm)',
+                  background: bgMode === mode ? '#ffffff' : 'transparent',
+                  color: bgMode === mode ? 'var(--text-primary)' : 'var(--text-secondary)',
+                  boxShadow: bgMode === mode ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
                   cursor: 'pointer',
                 }}
               >
@@ -127,7 +129,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: bgMode === 'black' ? '#111111' : bgMode === 'white' ? '#FFFFFF' : '#1A1A20',
+          backgroundColor: bgMode === 'black' ? '#0f1015' : bgMode === 'white' ? '#FFFFFF' : '#f0f2f5',
         }}
         className={bgMode === 'checker' ? 'checkerboard-pattern' : ''}
       >
@@ -136,7 +138,9 @@ export const CompareModal: React.FC<CompareModalProps> = ({
             width: '800px',
             height: '600px',
             position: 'relative',
-            boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+            boxShadow: 'var(--shadow-floating-canvas)',
+            borderRadius: '8px',
+            overflow: 'hidden',
           }}
         >
           {/* Base Layer: Right Version (After) */}
@@ -159,7 +163,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({
               inset: 0,
               overflow: 'hidden',
               width: `${sliderPos}%`,
-              borderRight: '2px solid var(--accent-cyan)',
+              borderRight: '2px solid var(--color-canva-violet)',
             }}
           >
             <img
@@ -209,9 +213,9 @@ export const CompareModal: React.FC<CompareModalProps> = ({
                 width: '24px',
                 height: '24px',
                 borderRadius: '50%',
-                background: 'var(--accent-cyan)',
-                border: '2px solid #08080A',
-                boxShadow: '0 0 10px rgba(0,223,216,0.6)',
+                background: 'var(--color-canva-violet)',
+                border: '2px solid #ffffff',
+                boxShadow: '0 2px 8px rgba(139, 61, 255, 0.45)',
               }}
             />
           </div>

@@ -88,7 +88,7 @@ export const Header: React.FC<HeaderProps> = ({
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '10px',
             textDecoration: 'none',
           }}
         >
@@ -96,10 +96,10 @@ export const Header: React.FC<HeaderProps> = ({
             src="/brand/zenith_lab_app_icon.png"
             alt="Zenith Lab"
             style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '7px',
-              boxShadow: '0 0 14px rgba(130, 208, 245, 0.35)',
+              width: '34px',
+              height: '34px',
+              borderRadius: '8px',
+              boxShadow: 'var(--shadow-subtle)',
               display: 'block',
             }}
           />
@@ -108,25 +108,25 @@ export const Header: React.FC<HeaderProps> = ({
               <span
                 className="font-heading"
                 style={{
-                  fontWeight: 800,
-                  letterSpacing: '0.08em',
-                  fontSize: '0.98rem',
-                  color: '#FFF',
+                  fontWeight: 700,
+                  letterSpacing: '-0.02em',
+                  fontSize: '1.02rem',
+                  color: 'var(--color-ink-black)',
                 }}
               >
-                ZENITH <span style={{ color: '#82D0F5' }}>LAB</span>
+                ZENITH <span style={{ color: 'var(--color-canva-violet)' }}>LAB</span>
               </span>
               <span
                 style={{
-                  background: 'rgba(130, 208, 245, 0.12)',
-                  color: '#82D0F5',
-                  border: '1px solid rgba(130, 208, 245, 0.25)',
-                  padding: '1px 5px',
-                  borderRadius: '3px',
-                  fontSize: '0.62rem',
-                  fontFamily: 'var(--font-mono)',
+                  background: 'rgba(139, 61, 255, 0.08)',
+                  color: 'var(--color-canva-violet)',
+                  border: '1px solid rgba(139, 61, 255, 0.18)',
+                  padding: '1px 6px',
+                  borderRadius: '9999px',
+                  fontSize: '0.64rem',
+                  fontFamily: 'var(--font-heading)',
                   fontWeight: 600,
-                  letterSpacing: '0.06em',
+                  letterSpacing: '0.04em',
                 }}
               >
                 STUDIO
@@ -134,10 +134,11 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
             <span
               style={{
-                fontSize: '0.55rem',
-                letterSpacing: '0.14em',
-                color: 'var(--text-tertiary)',
-                fontFamily: 'var(--font-mono)',
+                fontSize: '0.58rem',
+                letterSpacing: '0.08em',
+                color: 'var(--color-slate-smoke)',
+                fontFamily: 'var(--font-heading)',
+                fontWeight: 500,
                 textTransform: 'uppercase',
               }}
             >
@@ -146,13 +147,13 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        <div style={{ height: '18px', width: '1px', background: 'var(--border-subtle)' }} />
+        <div style={{ height: '20px', width: '1px', background: 'var(--border-subtle)' }} />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span
             style={{
-              fontSize: '0.82rem',
-              color: 'var(--text-secondary)',
+              fontSize: '0.86rem',
+              color: 'var(--color-ink-black)',
               fontWeight: 500,
             }}
           >
@@ -168,46 +169,41 @@ export const Header: React.FC<HeaderProps> = ({
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
-          background: 'rgba(0, 0, 0, 0.35)',
-          padding: '4px 10px',
-          borderRadius: '20px',
-          border: isPresetVerified
-            ? '1px solid var(--border-subtle)'
-            : '1px solid rgba(255, 170, 0, 0.3)',
-          fontSize: '0.72rem',
-          color: isPresetVerified ? 'var(--text-muted)' : '#FFB84D',
-          fontFamily: 'var(--font-mono)',
+          background: 'var(--bg-control)',
+          padding: '4px 12px',
+          borderRadius: '9999px',
+          border: '1px solid var(--border-subtle)',
+          fontSize: '0.74rem',
+          color: isPresetVerified ? 'var(--status-ready)' : 'var(--status-warning)',
+          fontFamily: 'var(--font-heading)',
+          fontWeight: 600,
         }}
       >
         {isPresetVerified ? (
           <>
-            <ShieldCheck size={13} color="var(--accent-cyan)" />
-            <span>IMMUTABLE ENGINE // QIKINK VERIFIED 300 DPI</span>
+            <ShieldCheck size={13} color="var(--status-ready)" />
+            <span>QIKINK VERIFIED 300 DPI // PRODUCTION READY</span>
           </>
         ) : (
           <>
-            <AlertTriangle size={13} color="var(--accent-amber)" />
-            <span>IMMUTABLE ENGINE // UNVERIFIED PRESET</span>
+            <AlertTriangle size={13} color="var(--status-warning)" />
+            <span>UNVERIFIED PRESET // SAMPLE TEST RECOMMENDED</span>
           </>
         )}
       </div>
 
       {/* Quick Action Buttons */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         <button
-          className="btn-secondary"
+          className="btn-gradient"
           onClick={onOpenGenerate}
-          style={{
-            borderColor: 'rgba(121, 40, 202, 0.4)',
-            background: 'rgba(121, 40, 202, 0.1)',
-            color: '#E0B0FF',
-          }}
+          title="Generate artwork with AI"
         >
-          <Sparkles size={14} color="#00DFD8" />
-          <span>AI Generate</span>
+          <Sparkles size={15} />
+          <span>Magic Generate</span>
         </button>
 
-        <button className="btn-secondary" onClick={onUploadClick}>
+        <button className="btn-primary" onClick={onUploadClick}>
           <Upload size={14} />
           <span>Upload Artwork</span>
         </button>
@@ -218,7 +214,7 @@ export const Header: React.FC<HeaderProps> = ({
           title="Keyboard Shortcuts"
           style={{ padding: '8px' }}
         >
-          <HelpCircle size={15} />
+          <HelpCircle size={16} />
         </button>
       </div>
     </header>

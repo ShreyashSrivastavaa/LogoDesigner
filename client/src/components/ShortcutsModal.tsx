@@ -30,7 +30,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(0, 0, 0, 0.75)',
+        background: 'rgba(15, 16, 21, 0.45)',
         backdropFilter: 'blur(8px)',
         zIndex: 100,
         display: 'flex',
@@ -59,8 +59,8 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Keyboard size={18} color="var(--accent-cyan)" />
-            <span style={{ fontSize: '1rem', fontWeight: 700, color: '#FFF' }}>
+            <Keyboard size={18} color="var(--color-canva-violet)" />
+            <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
               KEYBOARD SHORTCUTS
             </span>
           </div>
@@ -81,20 +81,21 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 fontSize: '0.8rem',
-                padding: '4px 0',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+                padding: '6px 0',
+                borderBottom: '1px solid var(--border-subtle)',
               }}
             >
               <span style={{ color: 'var(--text-secondary)' }}>{s.desc}</span>
               <kbd
                 style={{
                   background: 'var(--bg-control)',
-                  border: '1px solid var(--border-subtle)',
+                  border: '1px solid var(--border-strong)',
                   borderRadius: '4px',
                   padding: '3px 8px',
                   fontSize: '0.72rem',
                   fontFamily: 'var(--font-mono)',
-                  color: 'var(--accent-cyan)',
+                  fontWeight: 600,
+                  color: 'var(--color-canva-violet)',
                 }}
               >
                 {s.key}

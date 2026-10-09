@@ -49,7 +49,7 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(0, 0, 0, 0.75)',
+        background: 'rgba(15, 16, 21, 0.45)',
         backdropFilter: 'blur(8px)',
         zIndex: 100,
         display: 'flex',
@@ -81,8 +81,8 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Sparkles size={18} color="var(--accent-cyan)" />
-            <span style={{ fontSize: '1rem', fontWeight: 700, color: '#FFF' }}>
+            <Sparkles size={18} color="var(--color-canva-violet)" />
+            <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
               AI STREETWEAR GRAPHIC GENERATOR
             </span>
           </div>
@@ -99,8 +99,8 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
           {/* Negative Constraints Notice */}
           <div
             style={{
-              background: 'rgba(0, 223, 216, 0.05)',
-              border: '1px solid rgba(0, 223, 216, 0.2)',
+              background: 'rgba(139, 61, 255, 0.05)',
+              border: '1px solid rgba(139, 61, 255, 0.2)',
               borderRadius: 'var(--radius-md)',
               padding: '10px',
               fontSize: '0.74rem',
@@ -110,9 +110,9 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
               gap: '8px',
             }}
           >
-            <ShieldAlert size={16} color="var(--accent-cyan)" style={{ flexShrink: 0, marginTop: '2px' }} />
+            <ShieldAlert size={16} color="var(--color-canva-violet)" style={{ flexShrink: 0, marginTop: '2px' }} />
             <div>
-              <strong style={{ color: '#FFF' }}>Print-Only Graphic Constraint Active:</strong> Prompts are strictly restricted to standalone graphics and vector emblems. Models are commanded never to generate t-shirt garments, folds, or human mockups in the pixel data.
+              <strong style={{ color: 'var(--text-primary)' }}>Print-Only Graphic Constraint Active:</strong> Prompts are strictly restricted to standalone graphics and vector emblems. Models are commanded never to generate t-shirt garments, folds, or human mockups in the pixel data.
             </div>
           </div>
 
@@ -148,10 +148,11 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
                   onClick={() => setStyle(s.id as any)}
                   style={{
                     justifyContent: 'center',
-                    background: style === s.id ? 'rgba(0, 223, 216, 0.15)' : 'var(--bg-control)',
-                    borderColor: style === s.id ? 'var(--accent-cyan)' : 'var(--border-subtle)',
-                    color: style === s.id ? 'var(--accent-cyan)' : 'var(--text-secondary)',
+                    background: style === s.id ? 'rgba(139, 61, 255, 0.1)' : 'var(--bg-control)',
+                    borderColor: style === s.id ? 'var(--color-canva-violet)' : 'var(--border-subtle)',
+                    color: style === s.id ? 'var(--color-canva-violet)' : 'var(--text-secondary)',
                     fontSize: '0.75rem',
+                    fontWeight: style === s.id ? 600 : 500,
                   }}
                 >
                   {s.label}
@@ -178,10 +179,11 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
                   onClick={() => setComposition(c.id as any)}
                   style={{
                     justifyContent: 'center',
-                    background: composition === c.id ? 'rgba(0, 223, 216, 0.15)' : 'var(--bg-control)',
-                    borderColor: composition === c.id ? 'var(--accent-cyan)' : 'var(--border-subtle)',
-                    color: composition === c.id ? 'var(--accent-cyan)' : 'var(--text-secondary)',
+                    background: composition === c.id ? 'rgba(139, 61, 255, 0.1)' : 'var(--bg-control)',
+                    borderColor: composition === c.id ? 'var(--color-canva-violet)' : 'var(--border-subtle)',
+                    color: composition === c.id ? 'var(--color-canva-violet)' : 'var(--text-secondary)',
                     fontSize: '0.72rem',
+                    fontWeight: composition === c.id ? 600 : 500,
                   }}
                 >
                   {c.label}
@@ -192,10 +194,10 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
 
           {/* Generate Button */}
           <button
-            className="btn-primary"
+            className="btn-gradient"
             onClick={handleGenerate}
             disabled={isLoading || !prompt.trim()}
-            style={{ width: '100%', padding: '12px' }}
+            style={{ width: '100%', padding: '12px', fontSize: '0.92rem' }}
           >
             {isLoading ? (
               <>
@@ -217,7 +219,7 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
           {/* Candidates Results Grid */}
           {candidates.length > 0 && (
             <div>
-              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#FFF', marginBottom: '10px' }}>
+              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '10px' }}>
                 SELECT CANDIDATE TO ADD AS PROJECT VERSION
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
@@ -239,8 +241,9 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
                     />
                     <div
                       style={{
-                        padding: '8px',
-                        background: 'rgba(14, 14, 18, 0.9)',
+                        padding: '8px 12px',
+                        background: '#ffffff',
+                        borderTop: '1px solid var(--border-subtle)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',

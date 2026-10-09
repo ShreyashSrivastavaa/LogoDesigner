@@ -24,7 +24,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(0, 0, 0, 0.8)',
+        background: 'rgba(15, 16, 21, 0.45)',
         backdropFilter: 'blur(8px)',
         zIndex: 100,
         display: 'flex',
@@ -56,7 +56,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <FileCheck size={18} color="var(--status-ready)" />
-            <span style={{ fontSize: '1rem', fontWeight: 700, color: '#FFF' }}>
+            <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
               POST-EXPORT AUDIT // PRODUCTION VERIFIED
             </span>
           </div>
@@ -75,8 +75,8 @@ export const ExportModal: React.FC<ExportModalProps> = ({
             style={{
               padding: '12px',
               borderRadius: 'var(--radius-md)',
-              background: report.isValid ? 'rgba(0, 230, 118, 0.1)' : 'rgba(255, 51, 102, 0.1)',
-              border: `1px solid ${report.isValid ? 'rgba(0, 230, 118, 0.3)' : 'rgba(255, 51, 102, 0.3)'}`,
+              background: report.isValid ? 'rgba(0, 177, 0, 0.08)' : 'rgba(255, 61, 77, 0.08)',
+              border: `1px solid ${report.isValid ? 'rgba(0, 177, 0, 0.25)' : 'rgba(255, 61, 77, 0.25)'}`,
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
@@ -88,7 +88,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
               <AlertTriangle size={24} color="var(--status-error)" />
             )}
             <div>
-              <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#FFF' }}>
+              <div style={{ fontSize: '0.9rem', fontWeight: 800, color: report.isValid ? '#007d26' : '#d92534' }}>
                 {report.isValid ? 'PRINT-READY EXPORT CONFIRMED' : 'EXPORT AUDIT WARNINGS'}
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
@@ -105,7 +105,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
               display: 'grid',
               gridTemplateColumns: 'repeat(2, 1fr)',
               gap: '10px',
-              background: 'var(--bg-panel)',
+              background: 'var(--bg-control)',
               padding: '14px',
               borderRadius: 'var(--radius-md)',
               border: '1px solid var(--border-subtle)',
@@ -113,28 +113,28 @@ export const ExportModal: React.FC<ExportModalProps> = ({
           >
             <div>
               <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>PIXEL DIMENSIONS</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: '#FFF' }}>
+              <div style={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--text-primary)' }}>
                 {report.metrics.widthPx} × {report.metrics.heightPx} px
               </div>
             </div>
 
             <div>
               <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>pHYs RESOLUTION CHUNK</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)' }}>
+              <div style={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--color-canva-violet)' }}>
                 {report.metrics.measuredPpmX ? `${report.metrics.densityDpi || 300} DPI` : 'Standard'}
               </div>
             </div>
 
             <div>
               <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>COLOR TYPE & CHANNELS</div>
-              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#FFF' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                 {report.metrics.channels} Channels (RGBA Type 6)
               </div>
             </div>
 
             <div>
               <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>FILE SIZE (QIKINK &lt; 25MB)</div>
-              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#FFF' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                 {report.metrics.fileSizeMb} MB
               </div>
             </div>
