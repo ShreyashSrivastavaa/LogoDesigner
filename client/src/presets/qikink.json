@@ -1,0 +1,312 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2026-10-09T04:45:00Z",
+  "products": [
+    {
+      "id": "unisex-classic-tee",
+      "name": "Unisex Classic T-Shirt",
+      "category": "t-shirt",
+      "description": "Standard 180 GSM combed cotton unisex streetwear t-shirt.",
+      "garmentColors": [
+        { "name": "Pitch Black", "hex": "#111111" },
+        { "name": "Crisp White", "hex": "#F8F8F8" },
+        { "name": "Navy Blue", "hex": "#1A2238" },
+        { "name": "Vintage Olive", "hex": "#3E4334" },
+        { "name": "Heather Grey", "hex": "#A2A4A8" }
+      ],
+      "placements": [
+        {
+          "id": "front-full",
+          "name": "Front - Maximum Area",
+          "printWidthIn": 16.0,
+          "printHeightIn": 20.0,
+          "safeMarginIn": 0.5,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "maxFileSizeMb": 25,
+          "supportedFormats": ["PNG", "JPEG"],
+          "provenance": {
+            "sourceUrl": "https://qikink.com/help/dtf-maximum-printing-area",
+            "retrievedAt": "2026-10-09T04:39:00Z",
+            "verified": true,
+            "notes": "Verified from Qikink DTF Maximum Printing Area documentation: Unisex T-Shirt max area is 16x20 inches."
+          }
+        },
+        {
+          "id": "front-standard",
+          "name": "Front - Standard Full Chest",
+          "printWidthIn": 12.0,
+          "printHeightIn": 16.0,
+          "safeMarginIn": 0.5,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "maxFileSizeMb": 25,
+          "supportedFormats": ["PNG", "JPEG"],
+          "provenance": {
+            "sourceUrl": "https://qikink.com/design-guidelines/",
+            "retrievedAt": "2026-10-09T04:39:00Z",
+            "verified": true,
+            "notes": "Industry standard full chest print size on unisex tees within Qikink 16x20 maximum boundary."
+          }
+        },
+        {
+          "id": "front-pocket",
+          "name": "Front - Left/Right Pocket",
+          "printWidthIn": 4.0,
+          "printHeightIn": 4.0,
+          "safeMarginIn": 0.25,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "maxFileSizeMb": 25,
+          "supportedFormats": ["PNG", "JPEG"],
+          "provenance": {
+            "sourceUrl": "https://qikink.com/help/dtf-maximum-printing-area",
+            "retrievedAt": "2026-10-09T04:39:00Z",
+            "verified": true,
+            "notes": "Verified from Qikink DTF Maximum Printing Area documentation: Pocket print area is 4x4 inches."
+          }
+        },
+        {
+          "id": "back-full",
+          "name": "Back - Maximum Area",
+          "printWidthIn": 16.0,
+          "printHeightIn": 20.0,
+          "safeMarginIn": 0.5,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "maxFileSizeMb": 25,
+          "supportedFormats": ["PNG", "JPEG"],
+          "provenance": {
+            "sourceUrl": "https://qikink.com/help/dtf-maximum-printing-area",
+            "retrievedAt": "2026-10-09T04:39:00Z",
+            "verified": true,
+            "notes": "Verified from Qikink DTF Maximum Printing Area documentation: Unisex T-Shirt back max area is 16x20 inches."
+          }
+        },
+        {
+          "id": "sleeve",
+          "name": "Sleeve (Left or Right)",
+          "printWidthIn": 4.0,
+          "printHeightIn": 4.0,
+          "safeMarginIn": 0.25,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "maxFileSizeMb": 25,
+          "supportedFormats": ["PNG", "JPEG"],
+          "provenance": {
+            "sourceUrl": "https://qikink.com/help/dtf-maximum-printing-area",
+            "retrievedAt": "2026-10-09T04:39:00Z",
+            "verified": true,
+            "notes": "Verified from Qikink DTF Maximum Printing Area documentation: Sleeve area is 4x4 inches."
+          }
+        }
+      ]
+    },
+    {
+      "id": "oversized-tee",
+      "name": "Oversized Streetwear T-Shirt",
+      "category": "oversized-t-shirt",
+      "description": "240 GSM heavy French Terry oversized drop-shoulder t-shirt.",
+      "garmentColors": [
+        { "name": "Washed Charcoal", "hex": "#1E1E20" },
+        { "name": "Raw Off-White", "hex": "#EFECE6" },
+        { "name": "Earth Brown", "hex": "#382D26" },
+        { "name": "Forest Green", "hex": "#1C2E24" }
+      ],
+      "placements": [
+        {
+          "id": "oversized-front-full",
+          "name": "Front - Maximum Oversized Canvas",
+          "printWidthIn": 16.0,
+          "printHeightIn": 20.0,
+          "safeMarginIn": 0.5,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "maxFileSizeMb": 25,
+          "supportedFormats": ["PNG", "JPEG"],
+          "provenance": {
+            "sourceUrl": "https://qikink.com/help/dtf-maximum-printing-area",
+            "retrievedAt": "2026-10-09T04:39:00Z",
+            "verified": true,
+            "notes": "Verified from Qikink DTF Maximum Printing Area: Oversized T-Shirt front max is 16x20 inches."
+          }
+        },
+        {
+          "id": "oversized-back-poster",
+          "name": "Back - Full Statement Graphic",
+          "printWidthIn": 16.0,
+          "printHeightIn": 20.0,
+          "safeMarginIn": 0.5,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "maxFileSizeMb": 25,
+          "supportedFormats": ["PNG", "JPEG"],
+          "provenance": {
+            "sourceUrl": "https://qikink.com/help/dtf-maximum-printing-area",
+            "retrievedAt": "2026-10-09T04:39:00Z",
+            "verified": true,
+            "notes": "Verified from Qikink DTF Maximum Printing Area: Oversized T-Shirt back max is 16x20 inches."
+          }
+        },
+        {
+          "id": "oversized-chest-center",
+          "name": "Front - Center Chest Emblem",
+          "printWidthIn": 10.0,
+          "printHeightIn": 10.0,
+          "safeMarginIn": 0.5,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "maxFileSizeMb": 25,
+          "supportedFormats": ["PNG", "JPEG"],
+          "provenance": {
+            "sourceUrl": "https://qikink.com/design-guidelines/",
+            "retrievedAt": "2026-10-09T04:39:00Z",
+            "verified": true,
+            "notes": "Standard streetwear centered box/emblem placement."
+          }
+        }
+      ]
+    },
+    {
+      "id": "hoodie-pullover",
+      "name": "Streetwear Pullover Hoodie",
+      "category": "hoodie",
+      "description": "320+ GSM heavy fleece hoodie with kangaroo pocket and double-lined hood.",
+      "garmentColors": [
+        { "name": "Jet Black", "hex": "#0D0D0D" },
+        { "name": "Bone", "hex": "#E8E5DD" },
+        { "name": "Charcoal Heather", "hex": "#2B2B2E" },
+        { "name": "Deep Plum", "hex": "#301B28" }
+      ],
+      "placements": [
+        {
+          "id": "hoodie-front-chest",
+          "name": "Front - Above Kangaroo Pocket (Max 10x10)",
+          "printWidthIn": 10.0,
+          "printHeightIn": 10.0,
+          "safeMarginIn": 0.5,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "maxFileSizeMb": 25,
+          "supportedFormats": ["PNG", "JPEG"],
+          "provenance": {
+            "sourceUrl": "https://qikink.com/help/dtf-maximum-printing-area",
+            "retrievedAt": "2026-10-09T04:39:00Z",
+            "verified": true,
+            "notes": "Verified from Qikink DTF Maximum Printing Area: Hooded Sweatshirt Front max area is strictly 10x10 inches to prevent overlapping the pouch pocket."
+          }
+        },
+        {
+          "id": "hoodie-back-full",
+          "name": "Back - Maximum Statement Print",
+          "printWidthIn": 14.0,
+          "printHeightIn": 18.0,
+          "safeMarginIn": 0.5,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "maxFileSizeMb": 25,
+          "supportedFormats": ["PNG", "JPEG"],
+          "provenance": {
+            "sourceUrl": "https://qikink.com/help/dtf-maximum-printing-area",
+            "retrievedAt": "2026-10-09T04:39:00Z",
+            "verified": true,
+            "notes": "Large back canvas for hoodies below hood drop line."
+          }
+        },
+        {
+          "id": "hoodie-pocket",
+          "name": "Chest / Small Badge",
+          "printWidthIn": 4.0,
+          "printHeightIn": 4.0,
+          "safeMarginIn": 0.25,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "maxFileSizeMb": 25,
+          "supportedFormats": ["PNG", "JPEG"],
+          "provenance": {
+            "sourceUrl": "https://qikink.com/help/dtf-maximum-printing-area",
+            "retrievedAt": "2026-10-09T04:39:00Z",
+            "verified": true,
+            "notes": "Verified pocket print area 4x4 inches."
+          }
+        }
+      ]
+    },
+    {
+      "id": "crewneck-sweatshirt",
+      "name": "Classic Crewneck Sweatshirt",
+      "category": "sweatshirt",
+      "description": "300 GSM brushed fleece crewneck without front pockets.",
+      "garmentColors": [
+        { "name": "Black", "hex": "#111111" },
+        { "name": "Heather Grey", "hex": "#A2A4A8" },
+        { "name": "Navy", "hex": "#1A2238" }
+      ],
+      "placements": [
+        {
+          "id": "crewneck-front-full",
+          "name": "Front - Full Chest",
+          "printWidthIn": 14.0,
+          "printHeightIn": 16.0,
+          "safeMarginIn": 0.5,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "maxFileSizeMb": 25,
+          "supportedFormats": ["PNG", "JPEG"],
+          "provenance": {
+            "sourceUrl": "https://qikink.com/help/dtf-maximum-printing-area",
+            "retrievedAt": "2026-10-09T04:39:00Z",
+            "verified": true,
+            "notes": "Crewneck front print area up to 14x16 inches without pocket obstruction."
+          }
+        },
+        {
+          "id": "crewneck-back-full",
+          "name": "Back - Full Canvas",
+          "printWidthIn": 14.0,
+          "printHeightIn": 16.0,
+          "safeMarginIn": 0.5,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "maxFileSizeMb": 25,
+          "supportedFormats": ["PNG", "JPEG"],
+          "provenance": {
+            "sourceUrl": "https://qikink.com/help/dtf-maximum-printing-area",
+            "retrievedAt": "2026-10-09T04:39:00Z",
+            "verified": true,
+            "notes": "Crewneck back print area up to 14x16 inches."
+          }
+        }
+      ]
+    },
+    {
+      "id": "custom-preset",
+      "name": "Custom Dimensions",
+      "category": "custom",
+      "description": "User-specified custom physical dimensions and DPI.",
+      "garmentColors": [
+        { "name": "Black Canvas", "hex": "#121212" },
+        { "name": "White Canvas", "hex": "#FFFFFF" }
+      ],
+      "placements": [
+        {
+          "id": "custom-placement",
+          "name": "Custom Area",
+          "printWidthIn": 12.0,
+          "printHeightIn": 16.0,
+          "safeMarginIn": 0.5,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "maxFileSizeMb": 25,
+          "supportedFormats": ["PNG", "JPEG"],
+          "provenance": {
+            "sourceUrl": "https://qikink.com/design-guidelines/",
+            "retrievedAt": "2026-10-09T04:39:00Z",
+            "verified": false,
+            "notes": "Custom user dimensions. Always verify garment specific maximum printable boundaries with Qikink."
+          }
+        }
+      ]
+    }
+  ]
+}

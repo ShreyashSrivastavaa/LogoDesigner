@@ -17,11 +17,17 @@ import { GenerateModal } from './components/GenerateModal';
 import { CompareModal } from './components/CompareModal';
 import { ExportModal } from './components/ExportModal';
 import { ShortcutsModal } from './components/ShortcutsModal';
+import qikinkPresets from './presets/qikink.json';
+
+const initialProducts = qikinkPresets.products as unknown as ProductPreset[];
+const initialProduct = initialProducts[0] || null;
+const initialPlacement = initialProduct?.placements?.[0] || null;
+const initialColorHex = initialProduct?.garmentColors?.[0]?.hex || '#111111';
 
 export const App: React.FC = () => {
-  const [products, setProducts] = useState<ProductPreset[]>([]);
-  const [selectedProduct, setSelectedProduct] = useState<ProductPreset | null>(null);
-  const [selectedPlacement, setSelectedPlacement] = useState<GarmentPlacement | null>(null);
+  const [products, setProducts] = useState<ProductPreset[]>(initialProducts);
+  const [selectedProduct, setSelectedProduct] = useState<ProductPreset | null>(initialProduct);
+  const [selectedPlacement, setSelectedPlacement] = useState<GarmentPlacement | null>(initialPlacement);
   const [targetDpi, setTargetDpi] = useState<number>(300);
 
   // Layers & Versions
@@ -39,7 +45,7 @@ export const App: React.FC = () => {
   const [zoom, setZoom] = useState<number>(1.0);
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [showMockup, setShowMockup] = useState<boolean>(true);
-  const [selectedColorHex, setSelectedColorHex] = useState<string>('#111111');
+  const [selectedColorHex, setSelectedColorHex] = useState<string>(initialColorHex);
 
   // Async States
   const [validation, setValidation] = useState<ValidationReport | null>(null);

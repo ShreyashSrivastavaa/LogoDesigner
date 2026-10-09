@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import sharp from 'sharp';
 import { LocalDiskStorage, inspectImageBuffer } from './storage/fileStorage.js';
 import { PresetsCatalogSchema } from './presets/presetSchema.js';
+import { DEFAULT_QIKINK_CATALOG } from './presets/defaultCatalog.js';
 import { validatePrintProject, analyzeImageBuffer } from './core/validator.js';
 import { renderPrintArtwork } from './core/exportRenderer.js';
 import { verifyExportedFile } from './core/postExportVerifier.js';
@@ -15,6 +16,7 @@ import { LanczosUpscaleProvider } from './providers/upscale/lanczosUpscaleProvid
 import { StandaloneGraphicGenerationProvider } from './providers/generation/imageGenerationProvider.js';
 import { processAlphaDefringe } from './core/alphaProcessing.js';
 import { detectArtworkType } from './core/graphicColorKey.js';
+import { fileURLToPath } from 'node:url';
 
 dotenv.config();
 
@@ -31,12 +33,26 @@ const rembgProvider = new LocalRembgProvider();
 const upscaleProvider = new LanczosUpscaleProvider();
 const generationProvider = new StandaloneGraphicGenerationProvider();
 
-// Load Qikink Presets
-const presetsPath = path.resolve(process.cwd(), 'src', 'presets', 'qikink.json');
-let presetsCatalog: unknown = null;
-if (fs.existsSync(presetsPath)) {
-  const raw = fs.readFileSync(presetsPath, 'utf-8');
-  presetsCatalog = PresetsCatalogSchema.parse(JSON.parse(raw));
+// Load Qikink Presets with zero-downtime fallback
+let presetsCatalog: unknown = PresetsCatalogSchema.parse(DEFAULT_QIKINK_CATALOG);
+
+try {
+  const currentDir = path.dirname(fileURLToPath(import.meta.url));
+  const candidatePresetPaths = [
+    path.join(currentDir, 'presets', 'qikink.json'),
+    path.join(currentDir, '..', 'src', 'presets', 'qikink.json'),
+    path.resolve(process.cwd(), 'src', 'presets', 'qikink.json'),
+    path.resolve(process.cwd(), 'dist', 'presets', 'qikink.json'),
+  ];
+  for (const p of candidatePresetPaths) {
+    if (fs.existsSync(p)) {
+      const raw = fs.readFileSync(p, 'utf-8');
+      presetsCatalog = PresetsCatalogSchema.parse(JSON.parse(raw));
+      break;
+    }
+  }
+} catch {
+  // DEFAULT_QIKINK_CATALOG is already safely loaded
 }
 
 // Multer memory storage for uploads
