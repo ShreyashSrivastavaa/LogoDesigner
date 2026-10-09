@@ -14,6 +14,7 @@ export interface Layer {
   originalHeight: number;
   hasAlpha: boolean;
   previewUrl: string;
+  dataUrl?: string;
 }
 
 export interface GarmentPlacement {
@@ -54,6 +55,7 @@ export interface ProjectVersion {
   label: string;
   fileId: string;
   previewUrl: string;
+  dataUrl?: string;
   provenance: {
     type: 'original' | 'bg-removed' | 'upscaled' | 'resampled' | 'defringed' | 'edited';
     label: string;

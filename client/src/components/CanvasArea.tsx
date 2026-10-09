@@ -375,6 +375,11 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 src={activeLayer.previewUrl}
                 alt={activeLayer.name}
                 draggable={false}
+                onError={(e) => {
+                  if (activeLayer.dataUrl && activeLayer.previewUrl !== activeLayer.dataUrl) {
+                    (e.currentTarget as HTMLImageElement).src = activeLayer.dataUrl;
+                  }
+                }}
                 style={{
                   width: '100%',
                   height: '100%',

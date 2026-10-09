@@ -3,9 +3,10 @@ import cors from 'cors';
 import multer from 'multer';
 import path from 'node:path';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import dotenv from 'dotenv';
 import sharp from 'sharp';
-import { LocalDiskStorage, inspectImageBuffer } from './storage/fileStorage.js';
+import { LocalDiskStorage, StoredFile, inspectImageBuffer } from './storage/fileStorage.js';
 import { PresetsCatalogSchema } from './presets/presetSchema.js';
 import { DEFAULT_QIKINK_CATALOG } from './presets/defaultCatalog.js';
 import { validatePrintProject, analyzeImageBuffer } from './core/validator.js';
@@ -32,6 +33,42 @@ const storage = new LocalDiskStorage();
 const rembgProvider = new LocalRembgProvider();
 const upscaleProvider = new LanczosUpscaleProvider();
 const generationProvider = new StandaloneGraphicGenerationProvider();
+
+/**
+ * Helper to retrieve image buffer from storage, with graceful hydration from fallback base64
+ * for serverless/multi-worker container environments where local disk may be ephemeral.
+ */
+async function resolveFileBuffer(
+  fileId?: string,
+  fallbackBase64?: string
+): Promise<{ buffer: Buffer; meta: StoredFile | { filename: string; mimeType: string } }> {
+  if (fileId) {
+    try {
+      const res = await storage.getFile(fileId);
+      return res;
+    } catch (storageErr) {
+      if (!fallbackBase64) throw storageErr;
+    }
+  }
+
+  if (fallbackBase64) {
+    const matches = fallbackBase64.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
+    let mimeType = 'image/png';
+    let rawBase64 = fallbackBase64;
+    if (matches && matches.length === 3) {
+      mimeType = matches[1];
+      rawBase64 = matches[2];
+    }
+    const buffer = Buffer.from(rawBase64, 'base64');
+    const ext = mimeType.includes('jpeg') ? '.jpg' : '.png';
+    const id = fileId || crypto.randomUUID();
+    const filename = `${id}${ext}`;
+    const stored = await storage.saveFile(buffer, filename, mimeType);
+    return { buffer, meta: stored };
+  }
+
+  throw new Error('Neither valid fileId nor fallbackBase64 image data was provided');
+}
 
 // Load Qikink Presets with zero-downtime fallback
 let presetsCatalog: unknown = PresetsCatalogSchema.parse(DEFAULT_QIKINK_CATALOG);
@@ -145,6 +182,9 @@ app.post('/api/upload', upload.single('file'), async (req, res): Promise<void> =
     const meta = await inspectImageBuffer(buffer);
     const pixelAnalysis = await analyzeImageBuffer(buffer);
 
+    // Base64 data URL for instant resilient preview
+    const previewDataUrl = `data:${detectedMime};base64,${buffer.toString('base64')}`;
+
     res.json({
       fileId: stored.fileId,
       filename: stored.filename,
@@ -154,6 +194,7 @@ app.post('/api/upload', upload.single('file'), async (req, res): Promise<void> =
       metadata: meta,
       pixelAnalysis,
       url: `/api/files/${stored.fileId}`,
+      previewDataUrl,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Upload processing failed';
@@ -191,10 +232,10 @@ app.post('/api/export', async (req, res): Promise<void> => {
       return;
     }
 
-    // Hydrate source buffers from storage
+    // Hydrate source buffers from storage or fallback base64
     const renderedLayers = [];
     for (const l of layers) {
-      const { buffer } = await storage.getFile(l.fileId);
+      const { buffer } = await resolveFileBuffer(l.fileId, l.imageBase64);
       renderedLayers.push({
         sourceBuffer: buffer,
         x: l.x,
@@ -269,12 +310,12 @@ app.post('/api/export', async (req, res): Promise<void> => {
 // 6. Background Removal (Graphic Color-Key / Photo AI)
 app.post('/api/detect-bg-mode', async (req, res): Promise<void> => {
   try {
-    const { fileId } = req.body;
-    if (!fileId) {
-      res.status(400).json({ error: 'fileId is required' });
+    const { fileId, imageBase64 } = req.body;
+    if (!fileId && !imageBase64) {
+      res.status(400).json({ error: 'fileId or imageBase64 is required' });
       return;
     }
-    const { buffer } = await storage.getFile(fileId);
+    const { buffer } = await resolveFileBuffer(fileId, imageBase64);
     const detection = await detectArtworkType(buffer);
     res.json(detection);
   } catch (err: unknown) {
@@ -287,6 +328,7 @@ app.post('/api/remove-bg', async (req, res): Promise<void> => {
   try {
     const {
       fileId,
+      imageBase64,
       model = 'u2net',
       alphaMatting = false,
       mode = 'auto',
@@ -294,12 +336,12 @@ app.post('/api/remove-bg', async (req, res): Promise<void> => {
       tolerance,
     } = req.body;
 
-    if (!fileId) {
-      res.status(400).json({ error: 'fileId is required' });
+    if (!fileId && !imageBase64) {
+      res.status(400).json({ error: 'fileId or imageBase64 is required' });
       return;
     }
 
-    const { buffer, meta } = await storage.getFile(fileId);
+    const { buffer, meta } = await resolveFileBuffer(fileId, imageBase64);
     const bgResult = await rembgProvider.removeBackground(buffer, {
       model,
       alphaMatting,
@@ -311,6 +353,7 @@ app.post('/api/remove-bg', async (req, res): Promise<void> => {
     const newFilename = `${path.parse(meta.filename).name}-bg-removed.png`;
     const stored = await storage.saveFile(bgResult.buffer, newFilename, 'image/png');
     const pixelAnalysis = await analyzeImageBuffer(bgResult.buffer);
+    const previewDataUrl = `data:image/png;base64,${bgResult.buffer.toString('base64')}`;
 
     res.json({
       fileId: stored.fileId,
@@ -324,6 +367,7 @@ app.post('/api/remove-bg', async (req, res): Promise<void> => {
       restoredPixelsCount: bgResult.restoredPixelsCount,
       pixelAnalysis,
       url: `/api/files/${stored.fileId}`,
+      previewDataUrl,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Background removal failed';
@@ -334,9 +378,9 @@ app.post('/api/remove-bg', async (req, res): Promise<void> => {
 // 7. Upscale Artwork (2x, 4x, 8x Lanczos3 / AI)
 app.post('/api/upscale', async (req, res): Promise<void> => {
   try {
-    const { fileId, scale = 2, denoise = true } = req.body;
-    if (!fileId) {
-      res.status(400).json({ error: 'fileId is required' });
+    const { fileId, imageBase64, scale = 2, denoise = true } = req.body;
+    if (!fileId && !imageBase64) {
+      res.status(400).json({ error: 'fileId or imageBase64 is required' });
       return;
     }
 
@@ -346,12 +390,13 @@ app.post('/api/upscale', async (req, res): Promise<void> => {
       return;
     }
 
-    const { buffer, meta } = await storage.getFile(fileId);
+    const { buffer, meta } = await resolveFileBuffer(fileId, imageBase64);
     const upscaleResult = await upscaleProvider.upscale(buffer, validScale, { denoise });
 
     const newFilename = `${path.parse(meta.filename).name}-${validScale}x-upscaled.png`;
     const stored = await storage.saveFile(upscaleResult.buffer, newFilename, 'image/png');
     const pixelAnalysis = await analyzeImageBuffer(upscaleResult.buffer);
+    const previewDataUrl = `data:image/png;base64,${upscaleResult.buffer.toString('base64')}`;
 
     res.json({
       fileId: stored.fileId,
@@ -363,6 +408,7 @@ app.post('/api/upscale', async (req, res): Promise<void> => {
       provenanceLabel: upscaleResult.provenanceLabel,
       pixelAnalysis,
       url: `/api/files/${stored.fileId}`,
+      previewDataUrl,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Upscaling failed';
@@ -373,13 +419,13 @@ app.post('/api/upscale', async (req, res): Promise<void> => {
 // 8. Alpha Defringe & Edge Refine
 app.post('/api/defringe', async (req, res): Promise<void> => {
   try {
-    const { fileId, cutoffThreshold, chokePx, decontaminateColor } = req.body;
-    if (!fileId) {
-      res.status(400).json({ error: 'fileId is required' });
+    const { fileId, imageBase64, cutoffThreshold, chokePx, decontaminateColor } = req.body;
+    if (!fileId && !imageBase64) {
+      res.status(400).json({ error: 'fileId or imageBase64 is required' });
       return;
     }
 
-    const { buffer, meta } = await storage.getFile(fileId);
+    const { buffer, meta } = await resolveFileBuffer(fileId, imageBase64);
     const refinedBuffer = await processAlphaDefringe(buffer, {
       cutoffThreshold,
       chokePx,
@@ -389,12 +435,14 @@ app.post('/api/defringe', async (req, res): Promise<void> => {
     const newFilename = `${path.parse(meta.filename).name}-defringed.png`;
     const stored = await storage.saveFile(refinedBuffer, newFilename, 'image/png');
     const pixelAnalysis = await analyzeImageBuffer(refinedBuffer);
+    const previewDataUrl = `data:image/png;base64,${refinedBuffer.toString('base64')}`;
 
     res.json({
       fileId: stored.fileId,
       filename: stored.filename,
       pixelAnalysis,
       url: `/api/files/${stored.fileId}`,
+      previewDataUrl,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Edge defringe failed';
@@ -441,6 +489,7 @@ app.post('/api/generate', async (req, res): Promise<void> => {
         provider: c.provider,
         costEstimateUsd: c.costEstimateUsd,
         url: `/api/files/${stored.fileId}`,
+        previewDataUrl: `data:image/png;base64,${c.buffer.toString('base64')}`,
       });
     }
 

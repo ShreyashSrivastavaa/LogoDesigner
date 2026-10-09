@@ -62,6 +62,11 @@ export const BottomPanel: React.FC<BottomPanelProps> = ({
                 <img
                   src={ver.previewUrl}
                   alt={ver.label}
+                  onError={(e) => {
+                    if (ver.dataUrl && ver.previewUrl !== ver.dataUrl) {
+                      (e.currentTarget as HTMLImageElement).src = ver.dataUrl;
+                    }
+                  }}
                   style={{ width: '28px', height: '28px', objectFit: 'contain', background: '#f8f9fa', border: '1px solid var(--border-subtle)', borderRadius: '4px' }}
                 />
                 <div style={{ textAlign: 'left' }}>

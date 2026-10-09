@@ -63,9 +63,15 @@ export class LocalDiskStorage implements StorageInterface {
   private readonly baseDir: string;
   private readonly metaFile: string;
   private fileIndex: Map<string, StoredFile> = new Map();
+  private static memoryBufferCache = new Map<string, { buffer: Buffer; meta: StoredFile }>();
 
   constructor(baseDir?: string) {
-    this.baseDir = baseDir || path.resolve(process.cwd(), 'data', 'storage');
+    const isVercel = Boolean(process.env.VERCEL || process.env.NOW_REGION);
+    const defaultDir = isVercel
+      ? path.join('/tmp', 'zenith-storage')
+      : path.resolve(process.cwd(), 'data', 'storage');
+
+    this.baseDir = baseDir || process.env.STORAGE_DIR || defaultDir;
     this.metaFile = path.join(this.baseDir, 'storage-meta.json');
     this.ensureDirs();
     this.loadIndex();
@@ -73,7 +79,11 @@ export class LocalDiskStorage implements StorageInterface {
 
   private ensureDirs(): void {
     if (!fs.existsSync(this.baseDir)) {
-      fs.mkdirSync(this.baseDir, { recursive: true });
+      try {
+        fs.mkdirSync(this.baseDir, { recursive: true });
+      } catch (err) {
+        console.warn('[Storage] ensureDirs error:', err);
+      }
     }
   }
 
@@ -90,8 +100,12 @@ export class LocalDiskStorage implements StorageInterface {
   }
 
   private persistIndex(): void {
-    const list = Array.from(this.fileIndex.values());
-    fs.writeFileSync(this.metaFile, JSON.stringify(list, null, 2), 'utf-8');
+    try {
+      const list = Array.from(this.fileIndex.values());
+      fs.writeFileSync(this.metaFile, JSON.stringify(list, null, 2), 'utf-8');
+    } catch (err) {
+      console.warn('[Storage] persistIndex warning:', err);
+    }
   }
 
   public async saveFile(
@@ -105,8 +119,12 @@ export class LocalDiskStorage implements StorageInterface {
     const diskFilename = `${fileId}${ext}`;
     const targetPath = path.join(this.baseDir, diskFilename);
 
-    // Save immutably (read-only attribute where possible)
-    fs.writeFileSync(targetPath, buffer);
+    try {
+      this.ensureDirs();
+      fs.writeFileSync(targetPath, buffer);
+    } catch (writeErr) {
+      console.warn('[Storage] Write to disk warning (continuing with memory cache):', writeErr);
+    }
 
     const stored: StoredFile = {
       fileId,
@@ -119,24 +137,79 @@ export class LocalDiskStorage implements StorageInterface {
     };
 
     this.fileIndex.set(fileId, stored);
+    LocalDiskStorage.memoryBufferCache.set(fileId, { buffer, meta: stored });
     this.persistIndex();
     return stored;
   }
 
   public async getFile(fileId: string): Promise<{ buffer: Buffer; meta: StoredFile }> {
-    const meta = this.fileIndex.get(fileId);
+    // 1. Check fileIndex
+    let meta = this.fileIndex.get(fileId);
+    if (!meta) {
+      this.loadIndex();
+      meta = this.fileIndex.get(fileId);
+    }
+
+    // 2. Dynamic disk fallback: check if file exists with pattern fileId.*
+    if (!meta && fs.existsSync(this.baseDir)) {
+      try {
+        const files = fs.readdirSync(this.baseDir);
+        const match = files.find((f) => f.startsWith(fileId));
+        if (match) {
+          const fullPath = path.join(this.baseDir, match);
+          const ext = path.extname(match).toLowerCase();
+          const mimeType =
+            ext === '.png'
+              ? 'image/png'
+              : ext === '.jpg' || ext === '.jpeg'
+              ? 'image/jpeg'
+              : 'application/octet-stream';
+          meta = {
+            fileId,
+            filename: match,
+            mimeType,
+            byteSize: fs.statSync(fullPath).size,
+            sha256: '',
+            filePath: fullPath,
+            createdAt: new Date().toISOString(),
+          };
+          this.fileIndex.set(fileId, meta);
+        }
+      } catch (err) {
+        console.warn('[Storage] Error scanning directory for file:', err);
+      }
+    }
+
+    // 3. Read directly from disk if present
+    if (meta && fs.existsSync(meta.filePath)) {
+      try {
+        const buffer = fs.readFileSync(meta.filePath);
+        LocalDiskStorage.memoryBufferCache.set(fileId, { buffer, meta });
+        return { buffer, meta };
+      } catch (readErr) {
+        console.warn('[Storage] Disk read error, falling back to memory cache:', readErr);
+      }
+    }
+
+    // 4. Memory buffer cache fallback (for ephemeral container filesystems)
+    const cached = LocalDiskStorage.memoryBufferCache.get(fileId);
+    if (cached) {
+      return cached;
+    }
+
     if (!meta) {
       throw new Error(`File ID not found in storage: ${fileId}`);
     }
-    if (!fs.existsSync(meta.filePath)) {
-      throw new Error(`Storage file missing on disk: ${meta.filePath}`);
-    }
-    const buffer = fs.readFileSync(meta.filePath);
-    return { buffer, meta };
+
+    throw new Error(`Storage file missing on disk: ${meta.filePath}`);
   }
 
   public getFilePath(fileId: string): string {
-    const meta = this.fileIndex.get(fileId);
+    let meta = this.fileIndex.get(fileId);
+    if (!meta) {
+      this.loadIndex();
+      meta = this.fileIndex.get(fileId);
+    }
     if (!meta) {
       throw new Error(`File ID not found in storage: ${fileId}`);
     }
@@ -149,13 +222,24 @@ export class LocalDiskStorage implements StorageInterface {
       fs.unlinkSync(meta.filePath);
     }
     this.fileIndex.delete(fileId);
+    LocalDiskStorage.memoryBufferCache.delete(fileId);
     this.persistIndex();
   }
 
   public async verifyIntegrity(fileId: string): Promise<boolean> {
-    const { buffer, meta } = await this.getFile(fileId);
+    let meta = this.fileIndex.get(fileId);
+    if (!meta) {
+      this.loadIndex();
+      meta = this.fileIndex.get(fileId);
+    }
+    if (meta && fs.existsSync(meta.filePath)) {
+      const diskBuffer = fs.readFileSync(meta.filePath);
+      const currentHash = crypto.createHash('sha256').update(diskBuffer).digest('hex');
+      return currentHash === meta.sha256;
+    }
+    const { buffer, meta: m } = await this.getFile(fileId);
     const currentHash = crypto.createHash('sha256').update(buffer).digest('hex');
-    return currentHash === meta.sha256;
+    return currentHash === m.sha256;
   }
 }
 

@@ -147,8 +147,27 @@ export const App: React.FC = () => {
     pushHistory(remaining);
   };
 
+  // Helper to read File as Base64 Data URL for zero-copy offline resilience
+  const readFileAsDataUrl = (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve((reader.result as string) || '');
+      reader.onerror = () => resolve('');
+      reader.readAsDataURL(file);
+    });
+  };
+
   // 4. File Upload Handler
   const handleFileUpload = async (file: File) => {
+    // Immediate 0ms local preview directly from browser memory (immune to network latency & 404s)
+    const localBlobUrl = URL.createObjectURL(file);
+    let localDataUrl = '';
+    try {
+      localDataUrl = await readFileAsDataUrl(file);
+    } catch {
+      // ignore
+    }
+
     const formData = new FormData();
     formData.append('file', file);
 
@@ -175,6 +194,9 @@ export const App: React.FC = () => {
       const initX = selectedPlacement ? (selectedPlacement.printWidthIn - initW) / 2 : 1;
       const initY = selectedPlacement ? (selectedPlacement.printHeightIn - initH) / 2 : 1;
 
+      // Prefer local blob or inline dataUrl to avoid multi-worker 404s on cloud container platforms
+      const effectivePreviewUrl = localBlobUrl || data.previewDataUrl || data.url;
+
       const newLayer: Layer = {
         id: crypto.randomUUID(),
         fileId: data.fileId,
@@ -190,7 +212,8 @@ export const App: React.FC = () => {
         originalWidth: data.metadata.width,
         originalHeight: data.metadata.height,
         hasAlpha: data.metadata.hasAlpha,
-        previewUrl: data.url,
+        previewUrl: effectivePreviewUrl,
+        dataUrl: localDataUrl || data.previewDataUrl,
       };
 
       const newVersion: ProjectVersion = {
@@ -198,7 +221,8 @@ export const App: React.FC = () => {
         versionNumber: versions.length + 1,
         label: 'Original Upload',
         fileId: data.fileId,
-        previewUrl: data.url,
+        previewUrl: effectivePreviewUrl,
+        dataUrl: localDataUrl || data.previewDataUrl,
         provenance: {
           type: 'original',
           label: 'Original Upload',
@@ -277,7 +301,10 @@ export const App: React.FC = () => {
     fetch('/api/detect-bg-mode', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fileId: activeLayer.fileId }),
+      body: JSON.stringify({
+        fileId: activeLayer.fileId,
+        imageBase64: activeLayer.dataUrl,
+      }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -304,6 +331,7 @@ export const App: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fileId: activeLayer.fileId,
+          imageBase64: activeLayer.dataUrl,
           mode: options?.mode || 'auto',
           preserveFineDetail: options?.preserveFineDetail ?? true,
           tolerance: options?.tolerance,
@@ -312,10 +340,13 @@ export const App: React.FC = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'BG Removal failed');
 
+      const previewUrl = data.previewDataUrl || data.url;
+
       const updatedLayer: Layer = {
         ...activeLayer,
         fileId: data.fileId,
-        previewUrl: data.url,
+        previewUrl,
+        dataUrl: data.previewDataUrl || activeLayer.dataUrl,
         hasAlpha: true,
       };
 
@@ -331,7 +362,8 @@ export const App: React.FC = () => {
         versionNumber: versions.length + 1,
         label: data.effectiveMode === 'graphic' ? 'Graphic Cutout' : 'AI Cutout',
         fileId: data.fileId,
-        previewUrl: data.url,
+        previewUrl,
+        dataUrl: data.previewDataUrl || activeLayer.dataUrl,
         provenance: {
           type: 'bg-removed',
           label: provLabel,
@@ -366,15 +398,22 @@ export const App: React.FC = () => {
       const res = await fetch('/api/upscale', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileId: activeLayer.fileId, scale }),
+        body: JSON.stringify({
+          fileId: activeLayer.fileId,
+          imageBase64: activeLayer.dataUrl,
+          scale,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Upscaling failed');
 
+      const previewUrl = data.previewDataUrl || data.url;
+
       const updatedLayer: Layer = {
         ...activeLayer,
         fileId: data.fileId,
-        previewUrl: data.url,
+        previewUrl,
+        dataUrl: data.previewDataUrl || activeLayer.dataUrl,
         originalWidth: data.width,
         originalHeight: data.height,
       };
@@ -384,7 +423,8 @@ export const App: React.FC = () => {
         versionNumber: versions.length + 1,
         label: `${scale}x Upscaled`,
         fileId: data.fileId,
-        previewUrl: data.url,
+        previewUrl,
+        dataUrl: data.previewDataUrl || activeLayer.dataUrl,
         provenance: {
           type: 'resampled',
           label: data.provenanceLabel,
@@ -419,15 +459,22 @@ export const App: React.FC = () => {
       const res = await fetch('/api/defringe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileId: activeLayer.fileId, chokePx }),
+        body: JSON.stringify({
+          fileId: activeLayer.fileId,
+          imageBase64: activeLayer.dataUrl,
+          chokePx,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Defringe failed');
 
+      const previewUrl = data.previewDataUrl || data.url;
+
       const updatedLayer: Layer = {
         ...activeLayer,
         fileId: data.fileId,
-        previewUrl: data.url,
+        previewUrl,
+        dataUrl: data.previewDataUrl || activeLayer.dataUrl,
       };
 
       const newVersion: ProjectVersion = {
@@ -435,7 +482,8 @@ export const App: React.FC = () => {
         versionNumber: versions.length + 1,
         label: 'Edge Defringed',
         fileId: data.fileId,
-        previewUrl: data.url,
+        previewUrl,
+        dataUrl: data.previewDataUrl || activeLayer.dataUrl,
         provenance: {
           type: 'defringed',
           label: `Edge Defringe & Alpha Choke (${chokePx}px)`,
@@ -472,6 +520,7 @@ export const App: React.FC = () => {
         .filter((l) => l.visible)
         .map((l) => ({
           fileId: l.fileId,
+          imageBase64: l.dataUrl,
           x: Math.round(l.x * targetDpi),
           y: Math.round(l.y * targetDpi),
           width: Math.round(l.width * targetDpi),
@@ -553,6 +602,7 @@ export const App: React.FC = () => {
         ...activeLayer,
         fileId: v.fileId,
         previewUrl: v.previewUrl,
+        dataUrl: v.dataUrl || activeLayer.dataUrl,
         originalWidth: v.width,
         originalHeight: v.height,
         hasAlpha: v.hasAlpha,
@@ -712,7 +762,8 @@ export const App: React.FC = () => {
       <GenerateModal
         isOpen={isGenerateOpen}
         onClose={() => setIsGenerateOpen(false)}
-        onSelectCandidate={(url, fileId, w, h) => {
+        onSelectCandidate={(url, fileId, w, h, previewDataUrl) => {
+          const effectiveUrl = previewDataUrl || url;
           const newLayer: Layer = {
             id: crypto.randomUUID(),
             fileId,
@@ -728,14 +779,16 @@ export const App: React.FC = () => {
             originalWidth: w,
             originalHeight: h,
             hasAlpha: true,
-            previewUrl: url,
+            previewUrl: effectiveUrl,
+            dataUrl: previewDataUrl,
           };
           const newVersion: ProjectVersion = {
             id: crypto.randomUUID(),
             versionNumber: versions.length + 1,
             label: 'AI Generated',
             fileId,
-            previewUrl: url,
+            previewUrl: effectiveUrl,
+            dataUrl: previewDataUrl,
             provenance: {
               type: 'original',
               label: 'AI Generated Graphic',

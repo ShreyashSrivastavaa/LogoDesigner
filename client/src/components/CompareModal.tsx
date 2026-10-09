@@ -147,6 +147,11 @@ export const CompareModal: React.FC<CompareModalProps> = ({
           <img
             src={rightVer.previewUrl}
             alt="after"
+            onError={(e) => {
+              if (rightVer.dataUrl && rightVer.previewUrl !== rightVer.dataUrl) {
+                (e.currentTarget as HTMLImageElement).src = rightVer.dataUrl;
+              }
+            }}
             style={{
               position: 'absolute',
               inset: 0,
@@ -169,6 +174,11 @@ export const CompareModal: React.FC<CompareModalProps> = ({
             <img
               src={leftVer.previewUrl}
               alt="before"
+              onError={(e) => {
+                if (leftVer.dataUrl && leftVer.previewUrl !== leftVer.dataUrl) {
+                  (e.currentTarget as HTMLImageElement).src = leftVer.dataUrl;
+                }
+              }}
               style={{
                 width: '800px',
                 height: '600px',

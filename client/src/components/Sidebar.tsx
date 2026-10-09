@@ -377,6 +377,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       <img
                         src={layer.previewUrl}
                         alt="thumb"
+                        onError={(e) => {
+                          if (layer.dataUrl && layer.previewUrl !== layer.dataUrl) {
+                            (e.currentTarget as HTMLImageElement).src = layer.dataUrl;
+                          }
+                        }}
                         style={{ width: '32px', height: '32px', objectFit: 'contain', background: '#f8f9fa', border: '1px solid var(--border-subtle)', borderRadius: '4px' }}
                       />
                       <div>

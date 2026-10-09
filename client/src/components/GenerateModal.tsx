@@ -4,7 +4,13 @@ import { Sparkles, X, Check, ShieldAlert, Cpu } from 'lucide-react';
 interface GenerateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectCandidate: (candidateUrl: string, fileId: string, width: number, height: number) => void;
+  onSelectCandidate: (
+    candidateUrl: string,
+    fileId: string,
+    width: number,
+    height: number,
+    previewDataUrl?: string
+  ) => void;
 }
 
 export const GenerateModal: React.FC<GenerateModalProps> = ({
@@ -235,7 +241,7 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
                     }}
                   >
                     <img
-                      src={c.url}
+                      src={c.previewDataUrl || c.url}
                       alt="candidate"
                       style={{ width: '100%', height: '180px', objectFit: 'contain' }}
                     />
@@ -255,7 +261,7 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
                       <button
                         className="btn-secondary"
                         onClick={() => {
-                          onSelectCandidate(c.url, c.fileId, c.width, c.height);
+                          onSelectCandidate(c.previewDataUrl || c.url, c.fileId, c.width, c.height, c.previewDataUrl);
                           onClose();
                         }}
                         style={{ fontSize: '0.72rem', padding: '4px 8px' }}
