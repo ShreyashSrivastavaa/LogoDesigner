@@ -105,7 +105,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       <button
         onClick={onUndo}
         disabled={!canUndo}
-        title="Undo (Ctrl+Z)"
+        title={canUndo ? "Undo last edit (Ctrl+Z)" : "Undo (Ctrl+Z) - Nothing to undo"}
+        aria-label="Undo"
         style={{
           width: '38px',
           height: '38px',
@@ -113,11 +114,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'transparent',
-          color: canUndo ? 'var(--text-secondary)' : 'var(--text-muted)',
-          border: 'none',
+          background: canUndo ? '#ffffff' : 'transparent',
+          color: canUndo ? 'var(--color-ink-black)' : 'var(--text-muted)',
+          border: canUndo ? '1px solid var(--border-strong)' : '1px solid transparent',
+          boxShadow: canUndo ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
           cursor: canUndo ? 'pointer' : 'not-allowed',
-          opacity: canUndo ? 1 : 0.4,
+          opacity: canUndo ? 1 : 0.35,
+          transition: 'all 0.15s ease',
         }}
       >
         <RotateCcw size={16} />
@@ -126,7 +129,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       <button
         onClick={onRedo}
         disabled={!canRedo}
-        title="Redo (Ctrl+Y)"
+        title={canRedo ? "Redo edit (Ctrl+Y)" : "Redo (Ctrl+Y) - Nothing to redo"}
+        aria-label="Redo"
         style={{
           width: '38px',
           height: '38px',
@@ -134,11 +138,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'transparent',
-          color: canRedo ? 'var(--text-secondary)' : 'var(--text-muted)',
-          border: 'none',
+          background: canRedo ? '#ffffff' : 'transparent',
+          color: canRedo ? 'var(--color-ink-black)' : 'var(--text-muted)',
+          border: canRedo ? '1px solid var(--border-strong)' : '1px solid transparent',
+          boxShadow: canRedo ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
           cursor: canRedo ? 'pointer' : 'not-allowed',
-          opacity: canRedo ? 1 : 0.4,
+          opacity: canRedo ? 1 : 0.35,
+          transition: 'all 0.15s ease',
         }}
       >
         <RotateCw size={16} />

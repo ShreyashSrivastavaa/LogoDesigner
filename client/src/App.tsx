@@ -112,6 +112,10 @@ export const App: React.FC = () => {
       const prevLayers = history[historyIndex - 1];
       setLayers(prevLayers);
       setHistoryIndex(historyIndex - 1);
+      const match = versions.find((v) => v.fileId === prevLayers[0]?.fileId);
+      if (match) {
+        setCurrentVersionId(match.id);
+      }
     }
   };
 
@@ -120,6 +124,10 @@ export const App: React.FC = () => {
       const nextLayers = history[historyIndex + 1];
       setLayers(nextLayers);
       setHistoryIndex(historyIndex + 1);
+      const match = versions.find((v) => v.fileId === nextLayers[0]?.fileId);
+      if (match) {
+        setCurrentVersionId(match.id);
+      }
     }
   };
 

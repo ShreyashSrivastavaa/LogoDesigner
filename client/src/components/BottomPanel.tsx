@@ -45,7 +45,7 @@ export const BottomPanel: React.FC<BottomPanelProps> = ({
               <button
                 key={ver.id}
                 onClick={() => onSelectVersion(ver)}
-                title={`${ver.label} - ${ver.provenance.label}`}
+                title={`Click to restore v${ver.versionNumber}: ${ver.label} (${ver.provenance.label})`}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
