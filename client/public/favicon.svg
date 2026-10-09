@@ -1,4 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#08080A"/>
-  <path d="M7 8h18l-14 16h14" stroke="#00DFD8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="zenithGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="65%" stop-color="#EDF7FC" />
+      <stop offset="100%" stop-color="#82D0F5" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#82D0F5" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#0B0D12" />
+  <!-- Upper arrow polygon -->
+  <polygon points="23,30 48,16 33,26 23,30" fill="url(#zenithGrad)" filter="url(#glow)"/>
+  <polygon points="16,48 48,16 41,16 16,48" fill="url(#zenithGrad)" filter="url(#glow)"/>
+  <!-- Lower accent chevron -->
+  <polygon points="31,43 38,32 52,48 44,48 38,40 31,43" fill="url(#zenithGrad)" filter="url(#glow)"/>
 </svg>

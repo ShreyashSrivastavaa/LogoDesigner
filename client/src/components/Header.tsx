@@ -92,48 +92,58 @@ export const Header: React.FC<HeaderProps> = ({
             textDecoration: 'none',
           }}
         >
-          <div
+          <img
+            src="/brand/zenith_lab_app_icon.png"
+            alt="Zenith Lab"
             style={{
-              width: '28px',
-              height: '28px',
-              borderRadius: '6px',
-              background: 'linear-gradient(135deg, #00DFD8 0%, #7928CA 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: 900,
-              fontSize: '14px',
-              color: '#08080A',
-              fontFamily: 'var(--font-heading)',
-              boxShadow: '0 0 12px rgba(0, 223, 216, 0.35)',
+              width: '32px',
+              height: '32px',
+              borderRadius: '7px',
+              boxShadow: '0 0 14px rgba(130, 208, 245, 0.35)',
+              display: 'block',
             }}
-          >
-            Z
+          />
+          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span
+                className="font-heading"
+                style={{
+                  fontWeight: 800,
+                  letterSpacing: '0.08em',
+                  fontSize: '0.98rem',
+                  color: '#FFF',
+                }}
+              >
+                ZENITH <span style={{ color: '#82D0F5' }}>LAB</span>
+              </span>
+              <span
+                style={{
+                  background: 'rgba(130, 208, 245, 0.12)',
+                  color: '#82D0F5',
+                  border: '1px solid rgba(130, 208, 245, 0.25)',
+                  padding: '1px 5px',
+                  borderRadius: '3px',
+                  fontSize: '0.62rem',
+                  fontFamily: 'var(--font-mono)',
+                  fontWeight: 600,
+                  letterSpacing: '0.06em',
+                }}
+              >
+                STUDIO
+              </span>
+            </div>
+            <span
+              style={{
+                fontSize: '0.55rem',
+                letterSpacing: '0.14em',
+                color: 'var(--text-tertiary)',
+                fontFamily: 'var(--font-mono)',
+                textTransform: 'uppercase',
+              }}
+            >
+              BUILD · EXPERIMENT · EVOLVE
+            </span>
           </div>
-          <span
-            className="font-heading"
-            style={{
-              fontWeight: 800,
-              letterSpacing: '0.08em',
-              fontSize: '1rem',
-              color: '#FFF',
-            }}
-          >
-            ZENITH DISTRICT
-          </span>
-          <span
-            style={{
-              background: 'rgba(255, 255, 255, 0.08)',
-              color: 'var(--text-secondary)',
-              padding: '2px 6px',
-              borderRadius: '4px',
-              fontSize: '0.68rem',
-              fontFamily: 'var(--font-mono)',
-              letterSpacing: '0.05em',
-            }}
-          >
-            PRINT STUDIO
-          </span>
         </div>
 
         <div style={{ height: '18px', width: '1px', background: 'var(--border-subtle)' }} />

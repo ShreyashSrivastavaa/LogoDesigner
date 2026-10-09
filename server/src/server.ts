@@ -89,7 +89,7 @@ function verifyMagicBytes(buffer: Buffer): { isValid: boolean; detectedMime: str
 app.get('/api/health', async (_req, res) => {
   res.json({
     status: 'ok',
-    app: 'Zenith District Print Studio Server',
+    app: 'Zenith Lab Server',
     version: '1.0.0',
     capabilities: {
       localRembg: await rembgProvider.isAvailable(),
@@ -472,7 +472,7 @@ if (fs.existsSync(clientDistPath)) {
 // Start Server
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
-    console.log(`[Zenith District Print Studio Server] Listening on http://localhost:${PORT}`);
+    console.log(`[Zenith Lab Server] Listening on http://localhost:${PORT}`);
   });
 }
 
