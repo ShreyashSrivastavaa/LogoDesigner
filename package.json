@@ -1,0 +1,25 @@
+{
+  "name": "zenith-district-print-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Zenith District Print-Ready Design Studio for Qikink POD apparel exports",
+  "scripts": {
+    "dev": "npm --prefix server run dev",
+    "test": "npm --prefix server run test",
+    "test:run": "npm --prefix server run test:run",
+    "verify": "npm --prefix server run verify",
+    "build": "npm --prefix server run build",
+    "lint": "npm --prefix server run lint"
+  },
+  "keywords": [
+    "print-on-demand",
+    "qikink",
+    "dtf",
+    "dtg",
+    "high-resolution",
+    "streetwear",
+    "image-processing"
+  ],
+  "author": "Zenith District",
+  "license": "MIT"
+}

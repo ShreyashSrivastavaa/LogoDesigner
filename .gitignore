@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build artifacts
+dist/
+build/
+*.tsbuildinfo
+
+# Local Data Storage & Environment
+.env
+.env.local
+data/
+server/data/
+**/data/
+**/tests/fixtures/*.png
+**/tests/fixtures/*.jpg
+!**/tests/fixtures/generateFixtures.ts
+
+# Operating system files
+.DS_Store
+Thumbs.db
