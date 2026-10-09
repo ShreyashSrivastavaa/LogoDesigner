@@ -36,17 +36,18 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '20px',
+        padding: '12px',
       }}
     >
       <div
         className="glass-panel"
         style={{
-          width: '480px',
-          maxWidth: '100%',
+          width: 'min(480px, 94vw)',
+          maxHeight: '90dvh',
           display: 'flex',
           flexDirection: 'column',
           boxShadow: 'var(--shadow-panel)',
+          overflow: 'hidden',
         }}
       >
         <div
@@ -72,7 +73,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
           </button>
         </div>
 
-        <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px', WebkitOverflowScrolling: 'touch' }}>
           {shortcuts.map((s) => (
             <div
               key={s.key}

@@ -17,6 +17,7 @@ import { GenerateModal } from './components/GenerateModal';
 import { CompareModal } from './components/CompareModal';
 import { ExportModal } from './components/ExportModal';
 import { ShortcutsModal } from './components/ShortcutsModal';
+import { Maximize2, Layers, Wand2, ShieldAlert, Download } from 'lucide-react';
 import qikinkPresets from './presets/qikink.json';
 
 const initialProducts = qikinkPresets.products as unknown as ProductPreset[];
@@ -29,6 +30,19 @@ export const App: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<ProductPreset | null>(initialProduct);
   const [selectedPlacement, setSelectedPlacement] = useState<GarmentPlacement | null>(initialPlacement);
   const [targetDpi, setTargetDpi] = useState<number>(300);
+
+  // Mobile layout state
+  const [isMobile, setIsMobile] = useState<boolean>(() => typeof window !== 'undefined' && window.innerWidth < 768);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState<boolean>(false);
+  const [mobileDrawerTab, setMobileDrawerTab] = useState<'placement' | 'layers' | 'enhance' | 'validate' | 'export'>('placement');
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Layers & Versions
   const [layers, setLayers] = useState<Layer[]>([]);
@@ -650,7 +664,7 @@ export const App: React.FC = () => {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100vh',
+        height: '100dvh',
         width: '100vw',
         background: 'var(--bg-app)',
         overflow: 'hidden',
@@ -674,6 +688,7 @@ export const App: React.FC = () => {
         onOpenGenerate={() => setIsGenerateOpen(true)}
         onUploadClick={() => fileInputRef.current?.click()}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
+        onOpenMobileDrawer={() => setIsMobileDrawerOpen(true)}
         validation={validation}
         projectName={selectedPlacement ? `${selectedProduct?.name} - ${selectedPlacement.name}` : 'New Project'}
         isPresetVerified={Boolean(selectedPlacement?.provenance?.verified)}
@@ -682,6 +697,7 @@ export const App: React.FC = () => {
       {/* Main Studio Middle (Toolbar + Canvas + Sidebar) */}
       <div style={{ flex: 1, display: 'flex', position: 'relative', overflow: 'hidden' }}>
         <Toolbar
+          isMobile={isMobile}
           currentTool={currentTool}
           onSelectTool={setCurrentTool}
           canUndo={historyIndex > 0}
@@ -704,6 +720,7 @@ export const App: React.FC = () => {
             onUpdateLayer={handleUpdateLayer}
             currentTool={currentTool}
             zoom={zoom}
+            onZoomChange={setZoom}
             pan={pan}
             onPanChange={setPan}
             showMockup={showMockup}
@@ -719,7 +736,8 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {selectedProduct && selectedPlacement && (
+        {/* Desktop Docked Sidebar */}
+        {!isMobile && selectedProduct && selectedPlacement && (
           <Sidebar
             products={products}
             selectedProduct={selectedProduct}
@@ -750,13 +768,87 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* Bottom Panel (Version Timeline & Compare Button) */}
+      {/* Desktop Bottom Panel (Version Timeline & Compare Button) */}
       <BottomPanel
         versions={versions}
         currentVersionId={currentVersionId}
         onSelectVersion={handleSelectVersion}
         onOpenCompare={() => setIsCompareOpen(true)}
       />
+
+      {/* Mobile Bottom Navigation Dock */}
+      {isMobile && (
+        <nav className="mobile-bottom-nav" aria-label="Mobile Navigation">
+          {[
+            { id: 'placement' as const, label: 'Product', icon: Maximize2 },
+            { id: 'layers' as const, label: 'Layers', icon: Layers },
+            { id: 'enhance' as const, label: 'Enhance', icon: Wand2 },
+            { id: 'validate' as const, label: 'Audit', icon: ShieldAlert },
+            { id: 'export' as const, label: 'Export', icon: Download },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = isMobileDrawerOpen && mobileDrawerTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                className={`mobile-nav-btn ${isActive ? 'active' : ''}`}
+                onClick={() => {
+                  setMobileDrawerTab(tab.id);
+                  setIsMobileDrawerOpen(true);
+                }}
+              >
+                <Icon size={18} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+      )}
+
+      {/* Mobile Drawer Sheet */}
+      {isMobile && isMobileDrawerOpen && selectedProduct && selectedPlacement && (
+        <div
+          className="mobile-drawer-overlay"
+          onClick={() => setIsMobileDrawerOpen(false)}
+        >
+          <div
+            className="mobile-drawer-sheet"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Sidebar
+              isMobile
+              activeTab={mobileDrawerTab}
+              onTabChange={setMobileDrawerTab}
+              onCloseMobileDrawer={() => setIsMobileDrawerOpen(false)}
+              products={products}
+              selectedProduct={selectedProduct}
+              onSelectProduct={setSelectedProduct}
+              selectedPlacement={selectedPlacement}
+              onSelectPlacement={setSelectedPlacement}
+              targetDpi={targetDpi}
+              onDpiChange={setTargetDpi}
+              layers={layers}
+              activeLayer={activeLayer}
+              onUpdateLayer={handleUpdateLayer}
+              onDeleteLayer={handleDeleteLayer}
+              validation={validation}
+              onRunRemoveBg={handleRunRemoveBg}
+              isRemovingBg={isRemovingBg}
+              bgRemovalError={bgRemovalError}
+              detectedBgMode={detectedBgMode}
+              estimatedBgHex={estimatedBgHex}
+              onRunUpscale={handleRunUpscale}
+              isUpscaling={isUpscaling}
+              onRunDefringe={handleRunDefringe}
+              isDefringing={isDefringing}
+              onExportClick={handleExportClick}
+              isExporting={isExporting}
+              onCenterLayer={handleCenterLayer}
+              onFitSafeMargin={handleFitSafeMargin}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Modals */}
       <GenerateModal

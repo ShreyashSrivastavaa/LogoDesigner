@@ -30,14 +30,14 @@ export const ExportModal: React.FC<ExportModalProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '20px',
+        padding: '12px',
       }}
     >
       <div
         className="glass-panel"
         style={{
-          width: '600px',
-          maxWidth: '100%',
+          width: 'min(600px, 94vw)',
+          maxHeight: '92dvh',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -69,7 +69,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
         </div>
 
         {/* Content */}
-        <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px', WebkitOverflowScrolling: 'touch' }}>
           {/* Status Banner */}
           <div
             style={{

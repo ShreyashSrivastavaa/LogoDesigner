@@ -8,6 +8,7 @@ interface CanvasAreaProps {
   onUpdateLayer: (updated: Partial<Layer>) => void;
   currentTool: EditorTool;
   zoom: number;
+  onZoomChange?: (zoom: number | ((prev: number) => number)) => void;
   pan: { x: number; y: number };
   onPanChange: (pan: { x: number; y: number }) => void;
   showMockup: boolean;
@@ -24,6 +25,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   onUpdateLayer,
   currentTool,
   zoom,
+  onZoomChange,
   pan,
   onPanChange,
   showMockup,
@@ -50,6 +52,10 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     aspectRatio: 1,
   });
 
+  // Mobile pinch-zoom state
+  const [touchStartDist, setTouchStartDist] = useState<number | null>(null);
+  const [touchStartZoom, setTouchStartZoom] = useState<number>(1);
+
   // Screen scale factor: 1 inch = 32 CSS pixels at 100% zoom
   const INCH_TO_SCREEN_PX = 32;
   const canvasWidthPx = currentPlacement.printWidthIn * INCH_TO_SCREEN_PX;
@@ -62,7 +68,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   const layerScreenW = activeLayer ? activeLayer.width * INCH_TO_SCREEN_PX : 0;
   const layerScreenH = activeLayer ? activeLayer.height * INCH_TO_SCREEN_PX : 0;
 
-  // Pan interaction
+  // Mouse Pan interaction
   const handleMouseDown = (e: React.MouseEvent) => {
     if (currentTool === 'hand' || e.button === 1) {
       setIsPanning(true);
@@ -99,6 +105,65 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     setIsResizing(false);
   };
 
+  // Touch handlers for mobile / tablet gestures
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      if (currentTool === 'hand') {
+        setIsPanning(true);
+        setStartPan({ x: touch.clientX - pan.x, y: touch.clientY - pan.y });
+      }
+    } else if (e.touches.length === 2 && onZoomChange) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      setTouchStartDist(dist);
+      setTouchStartZoom(zoom);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      if (isPanning) {
+        onPanChange({ x: touch.clientX - startPan.x, y: touch.clientY - startPan.y });
+      } else if (isDraggingLayer && activeLayer && !activeLayer.locked) {
+        const deltaX = (touch.clientX - dragStart.x) / (zoom * INCH_TO_SCREEN_PX);
+        const deltaY = (touch.clientY - dragStart.y) / (zoom * INCH_TO_SCREEN_PX);
+        onUpdateLayer({
+          x: Math.round((dragStart.layerX + deltaX) * 100) / 100,
+          y: Math.round((dragStart.layerY + deltaY) * 100) / 100,
+        });
+      } else if (isResizing && activeLayer && !activeLayer.locked) {
+        const deltaScreenX = (touch.clientX - resizeStart.mouseX) / zoom;
+        const deltaInches = deltaScreenX / INCH_TO_SCREEN_PX;
+        let newW = Math.max(0.5, resizeStart.layerW + deltaInches);
+        let newH = newW / resizeStart.aspectRatio;
+
+        onUpdateLayer({
+          width: Math.round(newW * 100) / 100,
+          height: Math.round(newH * 100) / 100,
+        });
+      }
+    } else if (e.touches.length === 2 && touchStartDist && onZoomChange) {
+      const currentDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const scaleFactor = currentDist / touchStartDist;
+      const newZoom = Math.max(0.2, Math.min(16, touchStartZoom * scaleFactor));
+      onZoomChange(Math.round(newZoom * 100) / 100);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsPanning(false);
+    setIsDraggingLayer(false);
+    setIsResizing(false);
+    setTouchStartDist(null);
+  };
+
   const handleLayerMouseDown = (e: React.MouseEvent) => {
     if (currentTool === 'select' && activeLayer && !activeLayer.locked) {
       e.stopPropagation();
@@ -106,6 +171,20 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       setDragStart({
         x: e.clientX,
         y: e.clientY,
+        layerX: activeLayer.x,
+        layerY: activeLayer.y,
+      });
+    }
+  };
+
+  const handleLayerTouchStart = (e: React.TouchEvent) => {
+    if (currentTool === 'select' && activeLayer && !activeLayer.locked && e.touches.length === 1) {
+      e.stopPropagation();
+      const touch = e.touches[0];
+      setIsDraggingLayer(true);
+      setDragStart({
+        x: touch.clientX,
+        y: touch.clientY,
         layerX: activeLayer.x,
         layerY: activeLayer.y,
       });
@@ -128,6 +207,23 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     });
   };
 
+  const handleResizeTouchStart = (e: React.TouchEvent, handle: string) => {
+    if (!activeLayer || activeLayer.locked || e.touches.length !== 1) return;
+    e.stopPropagation();
+    const touch = e.touches[0];
+    setIsResizing(true);
+    setResizeHandle(handle);
+    setResizeStart({
+      mouseX: touch.clientX,
+      mouseY: touch.clientY,
+      layerX: activeLayer.x,
+      layerY: activeLayer.y,
+      layerW: activeLayer.width,
+      layerH: activeLayer.height,
+      aspectRatio: activeLayer.width / activeLayer.height,
+    });
+  };
+
   // Dark-on-dark preview warning
   const isDarkGarment =
     selectedColorHex === '#111111' ||
@@ -141,6 +237,10 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
       style={{
         flex: 1,
         height: '100%',
@@ -151,24 +251,28 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        touchAction: 'none',
       }}
     >
       {/* Top Floating View Controls */}
       <div
         style={{
           position: 'absolute',
-          top: '16px',
+          top: '12px',
           left: '50%',
           transform: 'translateX(-50%)',
           zIndex: 30,
-          padding: '6px 14px',
+          padding: '5px 12px',
           display: 'flex',
           alignItems: 'center',
-          gap: '14px',
+          gap: '10px',
           background: '#ffffff',
           borderRadius: '9999px',
           border: '1px solid var(--border-strong)',
           boxShadow: 'var(--shadow-subtle)',
+          maxWidth: 'min(94vw, 560px)',
+          overflowX: 'auto',
+          WebkitOverflowScrolling: 'touch',
         }}
       >
         {/* Mockup Preview Toggle */}
@@ -356,6 +460,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
           {activeLayer && activeLayer.visible && (
             <div
               onMouseDown={handleLayerMouseDown}
+              onTouchStart={handleLayerTouchStart}
               style={{
                 position: 'absolute',
                 left: `${layerScreenX}px`,
@@ -394,12 +499,13 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                   {/* SE Resize Handle */}
                   <div
                     onMouseDown={(e) => handleResizeStart(e, 'se')}
+                    onTouchStart={(e) => handleResizeTouchStart(e, 'se')}
                     style={{
                       position: 'absolute',
                       right: '-6px',
                       bottom: '-6px',
-                      width: '12px',
-                      height: '12px',
+                      width: '14px',
+                      height: '14px',
                       background: 'var(--color-canva-violet)',
                       border: '2px solid #ffffff',
                       boxShadow: '0 1px 4px rgba(139, 61, 255, 0.4)',
@@ -410,12 +516,13 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                   {/* NW Resize Handle */}
                   <div
                     onMouseDown={(e) => handleResizeStart(e, 'nw')}
+                    onTouchStart={(e) => handleResizeTouchStart(e, 'nw')}
                     style={{
                       position: 'absolute',
                       left: '-6px',
                       top: '-6px',
-                      width: '12px',
-                      height: '12px',
+                      width: '14px',
+                      height: '14px',
                       background: 'var(--color-canva-violet)',
                       border: '2px solid #ffffff',
                       boxShadow: '0 1px 4px rgba(139, 61, 255, 0.4)',

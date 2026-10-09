@@ -26,6 +26,7 @@ interface ToolbarProps {
   onZoomIn: () => void;
   onZoomOut: () => void;
   onResetZoom: () => void;
+  isMobile?: boolean;
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
@@ -39,6 +40,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onZoomIn,
   onZoomOut,
   onResetZoom,
+  isMobile = false,
 }) => {
   const tools = [
     { id: 'select' as EditorTool, icon: Move, label: 'Select / Transform', shortcut: 'V' },
@@ -49,8 +51,66 @@ export const Toolbar: React.FC<ToolbarProps> = ({
     { id: 'hand' as EditorTool, icon: Hand, label: 'Hand / Pan Canvas', shortcut: 'H' },
   ];
 
+  if (isMobile) {
+    return (
+      <div className="mobile-floating-toolbar" role="toolbar" aria-label="Mobile quick tools">
+        <button
+          onClick={() => onSelectTool('select')}
+          className={`mobile-tool-btn ${currentTool === 'select' ? 'active' : ''}`}
+          title="Select / Transform tool"
+        >
+          <Move size={16} />
+        </button>
+        <button
+          onClick={() => onSelectTool('hand')}
+          className={`mobile-tool-btn ${currentTool === 'hand' ? 'active' : ''}`}
+          title="Hand / Pan Canvas"
+        >
+          <Hand size={16} />
+        </button>
+
+        <div style={{ width: '1px', height: '18px', background: 'var(--border-subtle)', margin: '0 2px' }} />
+
+        <button
+          onClick={onUndo}
+          disabled={!canUndo}
+          className="mobile-tool-btn"
+          title="Undo"
+          style={{ opacity: canUndo ? 1 : 0.35 }}
+        >
+          <RotateCcw size={15} />
+        </button>
+        <button
+          onClick={onRedo}
+          disabled={!canRedo}
+          className="mobile-tool-btn"
+          title="Redo"
+          style={{ opacity: canRedo ? 1 : 0.35 }}
+        >
+          <RotateCw size={15} />
+        </button>
+
+        <div style={{ width: '1px', height: '18px', background: 'var(--border-subtle)', margin: '0 2px' }} />
+
+        <button onClick={onZoomIn} className="mobile-tool-btn" title="Zoom In">
+          <ZoomIn size={15} />
+        </button>
+        <span style={{ fontSize: '0.62rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', minWidth: '28px', textAlign: 'center' }}>
+          {Math.round(zoomPercent)}%
+        </span>
+        <button onClick={onZoomOut} className="mobile-tool-btn" title="Zoom Out">
+          <ZoomOut size={15} />
+        </button>
+        <button onClick={onResetZoom} className="mobile-tool-btn" title="Fit Canvas">
+          <Maximize2 size={14} />
+        </button>
+      </div>
+    );
+  }
+
   return (
     <aside
+      className="desktop-only"
       style={{
         width: '54px',
         background: 'var(--bg-studio)',

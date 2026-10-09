@@ -61,15 +61,14 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '20px',
+        padding: '12px',
       }}
     >
       <div
         className="glass-panel"
         style={{
-          width: '680px',
-          maxWidth: '100%',
-          maxHeight: '90vh',
+          width: 'min(680px, 94vw)',
+          maxHeight: '92dvh',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -79,7 +78,7 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
         {/* Header */}
         <div
           style={{
-            padding: '16px 20px',
+            padding: '14px 18px',
             borderBottom: '1px solid var(--border-subtle)',
             display: 'flex',
             alignItems: 'center',
@@ -88,12 +87,13 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Sparkles size={18} color="var(--color-canva-violet)" />
-            <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+            <span style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)' }}>
               AI STREETWEAR GRAPHIC GENERATOR
             </span>
           </div>
           <button
             onClick={onClose}
+            aria-label="Close"
             style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
           >
             <X size={18} />
@@ -101,7 +101,7 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
         </div>
 
         {/* Body */}
-        <div style={{ padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ padding: '16px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '14px', WebkitOverflowScrolling: 'touch' }}>
           {/* Negative Constraints Notice */}
           <div
             style={{
@@ -140,12 +140,12 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
             <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>
               STYLE PRESET
             </label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
               {[
                 { id: 'streetwear', label: 'Cyberpunk Streetwear' },
                 { id: 'typography', label: 'Brutalist Typography' },
                 { id: 'vintage', label: '90s Bootleg Vintage' },
-                { id: 'minimal', label: 'Minimal Luxury Emblem' },
+                { id: 'minimal', label: 'Minimal Luxury' },
                 { id: 'anime', label: 'Mecha Cyber Anime' },
               ].map((s) => (
                 <button
@@ -157,8 +157,9 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
                     background: style === s.id ? 'rgba(139, 61, 255, 0.1)' : 'var(--bg-control)',
                     borderColor: style === s.id ? 'var(--color-canva-violet)' : 'var(--border-subtle)',
                     color: style === s.id ? 'var(--color-canva-violet)' : 'var(--text-secondary)',
-                    fontSize: '0.75rem',
+                    fontSize: '0.72rem',
                     fontWeight: style === s.id ? 600 : 500,
+                    padding: '8px 6px',
                   }}
                 >
                   {s.label}
@@ -172,7 +173,7 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
             <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>
               COMPOSITION
             </label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '6px' }}>
               {[
                 { id: 'centered_emblem', label: 'Centered Emblem' },
                 { id: 'full_chest', label: 'Full Chest Poster' },
@@ -190,6 +191,7 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
                     color: composition === c.id ? 'var(--color-canva-violet)' : 'var(--text-secondary)',
                     fontSize: '0.72rem',
                     fontWeight: composition === c.id ? 600 : 500,
+                    padding: '8px 4px',
                   }}
                 >
                   {c.label}
@@ -228,7 +230,7 @@ export const GenerateModal: React.FC<GenerateModalProps> = ({
               <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '10px' }}>
                 SELECT CANDIDATE TO ADD AS PROJECT VERSION
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
                 {candidates.map((c) => (
                   <div
                     key={c.id}

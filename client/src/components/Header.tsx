@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   Info,
+  Sliders,
 } from 'lucide-react';
 import { ValidationReport } from '../types';
 
@@ -15,6 +16,7 @@ interface HeaderProps {
   onOpenGenerate: () => void;
   onUploadClick: () => void;
   onOpenShortcuts: () => void;
+  onOpenMobileDrawer?: () => void;
   validation: ValidationReport | null;
   projectName: string;
   isPresetVerified?: boolean;
@@ -24,6 +26,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenGenerate,
   onUploadClick,
   onOpenShortcuts,
+  onOpenMobileDrawer,
   validation,
   projectName,
   isPresetVerified = false,
@@ -34,7 +37,8 @@ export const Header: React.FC<HeaderProps> = ({
       return (
         <div className="badge-verified" title="Artwork is print-ready for Qikink">
           <CheckCircle2 size={12} />
-          <span>300 DPI // READY TO EXPORT</span>
+          <span className="hide-mobile">300 DPI // READY TO EXPORT</span>
+          <span className="mobile-only">300 DPI</span>
         </div>
       );
     }
@@ -42,7 +46,8 @@ export const Header: React.FC<HeaderProps> = ({
       return (
         <div className="badge-unverified" title={validation.warnings[0] || 'Ready with warnings'}>
           <AlertTriangle size={12} />
-          <span>READY WITH WARNINGS</span>
+          <span className="hide-mobile">READY WITH WARNINGS</span>
+          <span className="mobile-only">WARNING</span>
         </div>
       );
     }
@@ -78,39 +83,41 @@ export const Header: React.FC<HeaderProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '0 16px',
+        padding: '0 12px',
         zIndex: 50,
+        gap: '8px',
       }}
     >
       {/* Brand & Title */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '10px',
+            gap: '8px',
             textDecoration: 'none',
+            flexShrink: 0,
           }}
         >
           <img
             src="/brand/zenith_lab_app_icon.png"
             alt="Zenith Lab"
             style={{
-              width: '34px',
-              height: '34px',
+              width: '32px',
+              height: '32px',
               borderRadius: '8px',
               boxShadow: 'var(--shadow-subtle)',
               display: 'block',
             }}
           />
           <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <span
                 className="font-heading"
                 style={{
                   fontWeight: 700,
                   letterSpacing: '-0.02em',
-                  fontSize: '1.02rem',
+                  fontSize: '0.98rem',
                   color: 'var(--color-ink-black)',
                 }}
               >
@@ -121,9 +128,9 @@ export const Header: React.FC<HeaderProps> = ({
                   background: 'rgba(139, 61, 255, 0.08)',
                   color: 'var(--color-canva-violet)',
                   border: '1px solid rgba(139, 61, 255, 0.18)',
-                  padding: '1px 6px',
+                  padding: '1px 5px',
                   borderRadius: '9999px',
-                  fontSize: '0.64rem',
+                  fontSize: '0.62rem',
                   fontFamily: 'var(--font-heading)',
                   fontWeight: 600,
                   letterSpacing: '0.04em',
@@ -133,8 +140,9 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             </div>
             <span
+              className="desktop-only"
               style={{
-                fontSize: '0.58rem',
+                fontSize: '0.56rem',
                 letterSpacing: '0.08em',
                 color: 'var(--color-slate-smoke)',
                 fontFamily: 'var(--font-heading)',
@@ -147,14 +155,18 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        <div style={{ height: '20px', width: '1px', background: 'var(--border-subtle)' }} />
+        <div className="desktop-only" style={{ height: '20px', width: '1px', background: 'var(--border-subtle)' }} />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="desktop-only" style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
           <span
             style={{
-              fontSize: '0.86rem',
+              fontSize: '0.84rem',
               color: 'var(--color-ink-black)',
               fontWeight: 500,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxWidth: '240px',
             }}
           >
             {projectName}
@@ -163,10 +175,10 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Center Provenance Tag */}
+      {/* Center Provenance Tag (Desktop Only) */}
       <div
+        className="desktop-only"
         style={{
-          display: 'flex',
           alignItems: 'center',
           gap: '6px',
           background: 'var(--bg-control)',
@@ -177,6 +189,7 @@ export const Header: React.FC<HeaderProps> = ({
           color: isPresetVerified ? 'var(--status-ready)' : 'var(--status-warning)',
           fontFamily: 'var(--font-heading)',
           fontWeight: 600,
+          whiteSpace: 'nowrap',
         }}
       >
         {isPresetVerified ? (
@@ -193,29 +206,50 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Quick Action Buttons */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+        {getStatusBadge() && <div className="mobile-only">{getStatusBadge()}</div>}
+
         <button
           className="btn-gradient"
           onClick={onOpenGenerate}
           title="Generate artwork with AI"
+          style={{ padding: '7px 12px', fontSize: '0.82rem' }}
         >
-          <Sparkles size={15} />
-          <span>Magic Generate</span>
-        </button>
-
-        <button className="btn-primary" onClick={onUploadClick}>
-          <Upload size={14} />
-          <span>Upload Artwork</span>
+          <Sparkles size={14} />
+          <span className="hide-mobile">Magic Generate</span>
+          <span className="mobile-only">AI</span>
         </button>
 
         <button
-          className="btn-secondary"
+          className="btn-primary"
+          onClick={onUploadClick}
+          style={{ padding: '7px 12px', fontSize: '0.82rem' }}
+        >
+          <Upload size={14} />
+          <span className="hide-mobile">Upload Artwork</span>
+          <span className="mobile-only">Upload</span>
+        </button>
+
+        <button
+          className="btn-secondary desktop-only"
           onClick={onOpenShortcuts}
           title="Keyboard Shortcuts"
-          style={{ padding: '8px' }}
+          style={{ padding: '7px' }}
         >
-          <HelpCircle size={16} />
+          <HelpCircle size={15} />
         </button>
+
+        {onOpenMobileDrawer && (
+          <button
+            className="mobile-only btn-secondary"
+            onClick={onOpenMobileDrawer}
+            title="Open Studio Controls"
+            style={{ padding: '7px 10px', gap: '4px' }}
+          >
+            <Sliders size={15} color="var(--color-canva-violet)" />
+            <span style={{ fontSize: '0.72rem', fontWeight: 600 }}>Tools</span>
+          </button>
+        )}
       </div>
     </header>
   );

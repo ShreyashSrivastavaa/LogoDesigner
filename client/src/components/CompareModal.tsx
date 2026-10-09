@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { ProjectVersion } from '../types';
 import { X, SplitSquareVertical } from 'lucide-react';
 
@@ -17,11 +17,31 @@ export const CompareModal: React.FC<CompareModalProps> = ({
   const [rightIndex, setRightIndex] = useState(Math.min(1, versions.length - 1));
   const [sliderPos, setSliderPos] = useState(50); // 0 to 100%
   const [bgMode, setBgMode] = useState<'checker' | 'black' | 'white'>('checker');
+  const boxRef = useRef<HTMLDivElement>(null);
 
   if (!isOpen || versions.length < 2) return null;
 
   const leftVer = versions[leftIndex] || versions[0];
   const rightVer = versions[rightIndex] || versions[1];
+
+  const updateSliderFromClientX = (clientX: number) => {
+    if (!boxRef.current) return;
+    const rect = boxRef.current.getBoundingClientRect();
+    const pos = ((clientX - rect.left) / rect.width) * 100;
+    setSliderPos(Math.max(2, Math.min(98, pos)));
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      updateSliderFromClientX(e.touches[0].clientX);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      updateSliderFromClientX(e.touches[0].clientX);
+    }
+  };
 
   return (
     <div
@@ -38,32 +58,34 @@ export const CompareModal: React.FC<CompareModalProps> = ({
       {/* Top Header */}
       <div
         style={{
-          height: '60px',
-          padding: '0 24px',
+          minHeight: '56px',
+          padding: '8px 16px',
           background: 'var(--bg-panel)',
           borderBottom: '1px solid var(--border-subtle)',
           display: 'flex',
+          flexWrap: 'wrap',
           alignItems: 'center',
           justifyContent: 'space-between',
+          gap: '8px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <SplitSquareVertical size={18} color="var(--color-canva-violet)" />
-            <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-              BEFORE / AFTER COMPARISON
+            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              BEFORE / AFTER
             </span>
           </div>
 
           {/* Background Toggle */}
-          <div style={{ display: 'flex', gap: '4px', background: 'var(--bg-control)', padding: '3px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+          <div style={{ display: 'flex', gap: '4px', background: 'var(--bg-control)', padding: '2px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
             {(['checker', 'black', 'white'] as const).map((mode) => (
               <button
                 key={mode}
                 onClick={() => setBgMode(mode)}
                 style={{
-                  padding: '4px 10px',
-                  fontSize: '0.72rem',
+                  padding: '4px 8px',
+                  fontSize: '0.70rem',
                   fontWeight: 500,
                   border: 'none',
                   borderRadius: 'var(--radius-sm)',
@@ -73,20 +95,20 @@ export const CompareModal: React.FC<CompareModalProps> = ({
                   cursor: 'pointer',
                 }}
               >
-                {mode === 'checker' ? 'Checkerboard' : mode === 'black' ? 'Dark Garment' : 'Light Garment'}
+                {mode === 'checker' ? 'Checker' : mode === 'black' ? 'Dark' : 'Light'}
               </button>
             ))}
           </div>
         </div>
 
         {/* Version Selectors */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem' }}>
             <span style={{ color: 'var(--text-muted)' }}>Before:</span>
             <select
               value={leftIndex}
               onChange={(e) => setLeftIndex(parseInt(e.target.value, 10))}
-              style={{ width: '160px', padding: '4px 8px' }}
+              style={{ width: '120px', padding: '3px 6px', fontSize: '0.75rem' }}
             >
               {versions.map((v, i) => (
                 <option key={v.id} value={i}>
@@ -96,12 +118,12 @@ export const CompareModal: React.FC<CompareModalProps> = ({
             </select>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem' }}>
             <span style={{ color: 'var(--text-muted)' }}>After:</span>
             <select
               value={rightIndex}
               onChange={(e) => setRightIndex(parseInt(e.target.value, 10))}
-              style={{ width: '160px', padding: '4px 8px' }}
+              style={{ width: '120px', padding: '3px 6px', fontSize: '0.75rem' }}
             >
               {versions.map((v, i) => (
                 <option key={v.id} value={i}>
@@ -113,6 +135,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({
 
           <button
             onClick={onClose}
+            aria-label="Close"
             style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '6px' }}
           >
             <X size={20} />
@@ -129,18 +152,24 @@ export const CompareModal: React.FC<CompareModalProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          padding: '12px',
           backgroundColor: bgMode === 'black' ? '#0f1015' : bgMode === 'white' ? '#FFFFFF' : '#f0f2f5',
         }}
         className={bgMode === 'checker' ? 'checkerboard-pattern' : ''}
       >
         <div
+          ref={boxRef}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
           style={{
-            width: '800px',
-            height: '600px',
+            width: 'min(800px, 94vw)',
+            height: 'min(600px, 65vh)',
+            aspectRatio: '4 / 3',
             position: 'relative',
             boxShadow: 'var(--shadow-floating-canvas)',
             borderRadius: '8px',
             overflow: 'hidden',
+            touchAction: 'none',
           }}
         >
           {/* Base Layer: Right Version (After) */}
@@ -158,6 +187,8 @@ export const CompareModal: React.FC<CompareModalProps> = ({
               width: '100%',
               height: '100%',
               objectFit: 'contain',
+              userSelect: 'none',
+              pointerEvents: 'none',
             }}
           />
 
@@ -166,9 +197,9 @@ export const CompareModal: React.FC<CompareModalProps> = ({
             style={{
               position: 'absolute',
               inset: 0,
-              overflow: 'hidden',
-              width: `${sliderPos}%`,
+              clipPath: `inset(0 calc(100% - ${sliderPos}%) 0 0)`,
               borderRight: '2px solid var(--color-canva-violet)',
+              pointerEvents: 'none',
             }}
           >
             <img
@@ -180,12 +211,28 @@ export const CompareModal: React.FC<CompareModalProps> = ({
                 }
               }}
               style={{
-                width: '800px',
-                height: '600px',
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
                 objectFit: 'contain',
+                userSelect: 'none',
               }}
             />
           </div>
+
+          {/* Vertical Divider Line */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: `${sliderPos}%`,
+              width: '2px',
+              background: 'var(--color-canva-violet)',
+              pointerEvents: 'none',
+            }}
+          />
 
           {/* Interactive Split Slider Handle */}
           <div
@@ -195,20 +242,17 @@ export const CompareModal: React.FC<CompareModalProps> = ({
               bottom: 0,
               left: `${sliderPos}%`,
               transform: 'translateX(-50%)',
-              width: '32px',
+              width: '40px',
               cursor: 'ew-resize',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               zIndex: 10,
+              touchAction: 'none',
             }}
             onMouseDown={(e) => {
-              const startX = e.clientX;
-              const startPos = sliderPos;
               const onMove = (moveEv: MouseEvent) => {
-                const delta = moveEv.clientX - startX;
-                const newPos = Math.max(5, Math.min(95, startPos + (delta / 800) * 100));
-                setSliderPos(newPos);
+                updateSliderFromClientX(moveEv.clientX);
               };
               const onUp = () => {
                 window.removeEventListener('mousemove', onMove);
@@ -220,49 +264,59 @@ export const CompareModal: React.FC<CompareModalProps> = ({
           >
             <div
               style={{
-                width: '24px',
-                height: '24px',
+                width: '26px',
+                height: '26px',
                 borderRadius: '50%',
                 background: 'var(--color-canva-violet)',
                 border: '2px solid #ffffff',
                 boxShadow: '0 2px 8px rgba(139, 61, 255, 0.45)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
-            />
+            >
+              <div style={{ width: '4px', height: '10px', borderLeft: '1.5px solid #fff', borderRight: '1.5px solid #fff' }} />
+            </div>
           </div>
 
           {/* Labels */}
           <div
             style={{
               position: 'absolute',
-              top: '12px',
-              left: '12px',
+              top: '10px',
+              left: '10px',
               background: 'rgba(0,0,0,0.7)',
-              padding: '4px 8px',
+              padding: '3px 6px',
               borderRadius: '4px',
-              fontSize: '0.72rem',
+              fontSize: '0.68rem',
               color: '#FFF',
               fontFamily: 'var(--font-mono)',
+              pointerEvents: 'none',
             }}
           >
-            BEFORE: v{leftVer.versionNumber} ({leftVer.label})
+            BEFORE: v{leftVer.versionNumber}
           </div>
           <div
             style={{
               position: 'absolute',
-              top: '12px',
-              right: '12px',
+              top: '10px',
+              right: '10px',
               background: 'rgba(0,0,0,0.7)',
-              padding: '4px 8px',
+              padding: '3px 6px',
               borderRadius: '4px',
-              fontSize: '0.72rem',
+              fontSize: '0.68rem',
               color: '#FFF',
               fontFamily: 'var(--font-mono)',
+              pointerEvents: 'none',
             }}
           >
-            AFTER: v{rightVer.versionNumber} ({rightVer.label})
+            AFTER: v{rightVer.versionNumber}
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+
+

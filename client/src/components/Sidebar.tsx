@@ -24,6 +24,7 @@ import {
   ExternalLink,
   AlignCenter,
   ArrowUpDown,
+  X,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -56,6 +57,10 @@ interface SidebarProps {
   isExporting: boolean;
   onCenterLayer: () => void;
   onFitSafeMargin: () => void;
+  isMobile?: boolean;
+  activeTab?: 'placement' | 'layers' | 'enhance' | 'validate' | 'export';
+  onTabChange?: (tab: 'placement' | 'layers' | 'enhance' | 'validate' | 'export') => void;
+  onCloseMobileDrawer?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -84,8 +89,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isExporting,
   onCenterLayer,
   onFitSafeMargin,
+  isMobile = false,
+  activeTab: externalActiveTab,
+  onTabChange,
+  onCloseMobileDrawer,
 }) => {
-  const [activeTab, setActiveTab] = useState<'placement' | 'layers' | 'enhance' | 'validate' | 'export'>('placement');
+  const [internalActiveTab, setInternalActiveTab] = useState<'placement' | 'layers' | 'enhance' | 'validate' | 'export'>('placement');
+  const activeTab = externalActiveTab !== undefined ? externalActiveTab : internalActiveTab;
+  const setActiveTab = (tab: 'placement' | 'layers' | 'enhance' | 'validate' | 'export') => {
+    setInternalActiveTab(tab);
+    onTabChange?.(tab);
+  };
   const [unit, setUnit] = useState<'in' | 'cm'>('in');
   const [exportFormat, setExportFormat] = useState<'PNG' | 'JPEG'>('PNG');
   const [trimEdges, setTrimEdges] = useState(false);
@@ -108,22 +122,68 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside
+      className={isMobile ? '' : 'desktop-only'}
       style={{
-        width: '360px',
+        width: isMobile ? '100%' : '360px',
         background: 'var(--bg-studio)',
-        borderLeft: '1px solid var(--border-subtle)',
+        borderLeft: isMobile ? 'none' : '1px solid var(--border-subtle)',
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
+        maxHeight: isMobile ? '82dvh' : '100%',
         zIndex: 40,
+        overflow: 'hidden',
       }}
     >
+      {/* Mobile Drawer Grab Handle & Header */}
+      {isMobile && (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: '8px 16px 6px 16px',
+            borderBottom: '1px solid var(--border-subtle)',
+            background: 'var(--bg-panel)',
+            flexShrink: 0,
+          }}
+        >
+          <div className="mobile-drawer-handle-bar" onClick={onCloseMobileDrawer} />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginTop: '4px' }}>
+            <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '0.92rem', color: 'var(--text-primary)' }}>
+              Studio Controls & Tools
+            </span>
+            {onCloseMobileDrawer && (
+              <button
+                onClick={onCloseMobileDrawer}
+                aria-label="Close drawer"
+                style={{
+                  border: 'none',
+                  background: 'var(--bg-control)',
+                  borderRadius: '50%',
+                  width: '28px',
+                  height: '28px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                <X size={15} />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Sidebar Nav Tabs */}
       <div
         style={{
           display: 'flex',
           borderBottom: '1px solid var(--border-subtle)',
           background: 'var(--bg-panel)',
+          flexShrink: 0,
         }}
       >
         {[
@@ -141,7 +201,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => setActiveTab(tab.id as any)}
               style={{
                 flex: 1,
-                padding: '12px 4px',
+                padding: isMobile ? '8px 2px' : '12px 4px',
                 background: isActive ? 'var(--bg-studio)' : 'transparent',
                 color: isActive ? 'var(--color-canva-violet)' : 'var(--color-slate-smoke)',
                 border: 'none',
@@ -151,12 +211,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 flexDirection: 'column',
                 alignItems: 'center',
                 gap: '4px',
-                fontSize: '0.74rem',
+                fontSize: isMobile ? '0.70rem' : '0.74rem',
                 fontWeight: isActive ? 600 : 500,
                 transition: 'all 0.15s ease',
               }}
             >
-              <Icon size={16} />
+              <Icon size={isMobile ? 15 : 16} />
               <span>{tab.label}</span>
             </button>
           );

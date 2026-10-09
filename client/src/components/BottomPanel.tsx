@@ -17,6 +17,7 @@ export const BottomPanel: React.FC<BottomPanelProps> = ({
 }) => {
   return (
     <footer
+      className="desktop-only"
       style={{
         height: '76px',
         background: 'var(--bg-studio)',
